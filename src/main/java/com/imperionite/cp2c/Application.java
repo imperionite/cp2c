@@ -7,7 +7,7 @@ public class Application {
 
     public static void main(String[] args) {
         Javalin app = Javalin.create(config -> {
-            config.showJavalinBanner = false; // Disable the default banner
+            config.showJavalinBanner = false;
         }).start(4567);
 
         AppConfigurator configurator = new AppConfigurator();

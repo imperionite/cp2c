@@ -130,7 +130,7 @@ public class EmployeeController {
                     ctx.json(new MessageResponse("Employee with number " + employeeNumber + " not found."));
                 }
             } catch (Exception e) {
-                ctx.status(500); // Internal Server Error
+                ctx.status(500); 
                 System.err.println("EmployeeController: Error deleting employee and associated user: " + e.getMessage());
                 e.printStackTrace();
                 ctx.json(new MessageResponse("Internal server error during employee and user deletion."));
@@ -138,15 +138,4 @@ public class EmployeeController {
         });
     }
 
-    // Keep MessageResponse here if it's only used internally by this controller
-    // or move it to com.imperionite.cp2c.dto package for broader use.
-    // Assuming it's in its own file now based on AuthController fix.
-    // private static class MessageResponse {
-    //     private String message;
-    //     public MessageResponse(String message) {
-    //         this.message = message;
-    //     }
-    //     public String getMessage() { return message; }
-    //     public void setMessage(String message) { this.message = message; }
-    // }
 }

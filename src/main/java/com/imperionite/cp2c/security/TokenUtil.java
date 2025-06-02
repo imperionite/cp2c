@@ -11,7 +11,8 @@ public class TokenUtil {
      * Generates a random UUID token.
      * In a real application, consider using JWT (JSON Web Tokens) for more robust
      * and secure token management (e.g., expiration, signing, claims).
-     * @param id The ID of the user for whom the token is generated.
+     * 
+     * @param id       The ID of the user for whom the token is generated.
      * @param username The username for whom the token is generated.
      * @return A randomly generated UUID string.
      */

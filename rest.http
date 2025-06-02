@@ -1,5 +1,5 @@
 #### VARIABLES
-@token=ba01dfbf-1bab-4247-a295-94cedd0d49bd
+@token=3772eefd-1d50-4a73-865e-363dddb88f3a
 ####################################
 
 # The default users for login:
@@ -11,8 +11,8 @@ POST http://localhost:4567/api/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "admin",
-    "password": "adminPassword"
+    "username": "user-10009",
+    "password": "userPassword"
 }
 
 ### Sanity check for login

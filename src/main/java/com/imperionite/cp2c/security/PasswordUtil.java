@@ -18,7 +18,8 @@ public class PasswordUtil {
      * Verifies a plain password against a hashed password.
      */
     public static boolean verifyPassword(String plainPassword, String hashedPassword) {
-        if (hashedPassword == null || hashedPassword.isEmpty()) return false;
+        if (hashedPassword == null || hashedPassword.isEmpty())
+            return false;
         return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 }

@@ -12,19 +12,25 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Utility class for reading CSV files from the application's resources directory.
+ * Utility class for reading CSV files from the application's resources
+ * directory.
  * This is specifically for static CSV files bundled with the application.
- * Now primarily used for initial copying of static resources to a writable data directory.
+ * Now primarily used for initial copying of static resources to a writable data
+ * directory.
  */
 public class ResourceCsvReader {
 
     /**
-     * Reads a CSV file from the resources directory and parses each line into objects of type T.
+     * Reads a CSV file from the resources directory and parses each line into
+     * objects of type T.
      *
-     * @param <T> The type of object to parse each CSV line into.
-     * @param resourceName The name of the CSV file in the resources directory (e.g., "data.csv").
-     * @param lineParser A function that takes a String (CSV line) and returns an object of type T.
-     * @param skipHeader True if the first line of the CSV should be skipped (header row), false otherwise.
+     * @param <T>          The type of object to parse each CSV line into.
+     * @param resourceName The name of the CSV file in the resources directory
+     *                     (e.g., "data.csv").
+     * @param lineParser   A function that takes a String (CSV line) and returns an
+     *                     object of type T.
+     * @param skipHeader   True if the first line of the CSV should be skipped
+     *                     (header row), false otherwise.
      * @return A list of objects of type T read from the CSV.
      * @throws RuntimeException if the resource is not found or an I/O error occurs.
      */
@@ -35,11 +41,13 @@ public class ResourceCsvReader {
         int parsedCount = 0;
 
         try (InputStream is = ResourceCsvReader.class.getClassLoader().getResourceAsStream(resourceName);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 
             if (is == null) {
-                System.err.println("ResourceCsvReader: CRITICAL: Resource not found: " + resourceName + ". Double-check path and if it's included in JAR.");
-                throw new FileNotFoundException("ResourceCsvReader: Resource not found: " + resourceName + ". Please ensure it's in src/main/resources directory or the classpath.");
+                System.err.println("ResourceCsvReader: CRITICAL: Resource not found: " + resourceName
+                        + ". Double-check path and if it's included in JAR.");
+                throw new FileNotFoundException("ResourceCsvReader: Resource not found: " + resourceName
+                        + ". Please ensure it's in src/main/resources directory or the classpath.");
             }
             System.out.println("ResourceCsvReader: Resource stream opened for: " + resourceName);
 
@@ -66,13 +74,16 @@ public class ResourceCsvReader {
                     records.add(record);
                     parsedCount++;
                 } else {
-                    System.err.println("ResourceCsvReader: Failed to parse record from line " + lineCount + ". Parser returned null.");
+                    System.err.println("ResourceCsvReader: Failed to parse record from line " + lineCount
+                            + ". Parser returned null.");
                 }
             }
-            System.out.println("ResourceCsvReader: Finished reading. Total lines read: " + lineCount + ", Successfully parsed records: " + parsedCount);
+            System.out.println("ResourceCsvReader: Finished reading. Total lines read: " + lineCount
+                    + ", Successfully parsed records: " + parsedCount);
 
         } catch (IOException e) {
-            System.err.println("ResourceCsvReader: CRITICAL ERROR reading CSV resource '" + resourceName + "': " + e.getMessage());
+            System.err.println(
+                    "ResourceCsvReader: CRITICAL ERROR reading CSV resource '" + resourceName + "': " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("Failed to read data from resource: " + resourceName, e);
         }
@@ -82,18 +93,22 @@ public class ResourceCsvReader {
     /**
      * Copies a resource file from the classpath to a target file path.
      * Used for initializing writable data files from static resources.
-     * @param resourceName The name of the resource on the classpath.
+     * 
+     * @param resourceName   The name of the resource on the classpath.
      * @param targetFilePath The target file path to copy to.
-     * @throws IOException if the resource cannot be read or the file cannot be written.
+     * @throws IOException if the resource cannot be read or the file cannot be
+     *                     written.
      */
     public static void copyResourceToFile(String resourceName, java.nio.file.Path targetFilePath) throws IOException {
-        System.out.println("ResourceCsvReader: Attempting to copy resource '" + resourceName + "' to '" + targetFilePath + "'");
+        System.out.println(
+                "ResourceCsvReader: Attempting to copy resource '" + resourceName + "' to '" + targetFilePath + "'");
         try (InputStream is = ResourceCsvReader.class.getClassLoader().getResourceAsStream(resourceName)) {
             if (is == null) {
                 throw new FileNotFoundException("Resource not found on classpath: " + resourceName);
             }
             Files.copy(is, targetFilePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("ResourceCsvReader: Successfully copied resource '" + resourceName + "' to '" + targetFilePath + "'");
+            System.out.println("ResourceCsvReader: Successfully copied resource '" + resourceName + "' to '"
+                    + targetFilePath + "'");
         }
     }
 }

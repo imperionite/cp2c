@@ -9,12 +9,14 @@ import java.util.List;
 public interface EmployeeDao {
     /**
      * Retrieves all employee records.
+     * 
      * @return A list of all Employee objects.
      */
     List<Employee> getAllEmployees();
 
     /**
      * Finds an employee by their unique employee number.
+     * 
      * @param employeeNumber The employee number to search for.
      * @return The Employee object if found, null otherwise.
      */
@@ -22,12 +24,14 @@ public interface EmployeeDao {
 
     /**
      * Adds a new employee to the data store.
+     * 
      * @param employee The Employee object to add.
      */
     void addEmployee(Employee employee);
 
     /**
      * Updates an existing employee in the data store.
+     * 
      * @param updatedEmployee The Employee object with updated details.
      * @return true if the employee was found and updated, false otherwise.
      */
@@ -35,6 +39,7 @@ public interface EmployeeDao {
 
     /**
      * Deletes an employee from the data store by their employee number.
+     * 
      * @param employeeNumber The employee number to delete.
      * @return true if the employee was found and deleted, false otherwise.
      */

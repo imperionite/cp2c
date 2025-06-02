@@ -40,7 +40,7 @@ public class AppConfigurator {
     private AuthService authService;
     private EmployeeService employeeService;
 
-    // No need for a constructor with `app` if you're passing it to methods
+    // No need for a constructor with `app` if passing it to methods
     public AppConfigurator() {
         // Default constructor
     }
@@ -55,13 +55,12 @@ public class AppConfigurator {
         authService = new AuthService(userDao);
         seedUsers(); // This will now correctly check the populated DAOs
         initializeServices();
-        registerControllers(app); // Pass app here
+        registerControllers(app);
 
         System.out.println("AppConfigurator: Application components configured successfully.");
         System.out.println("AppConfigurator: API base URL: http://localhost:" + app.port() + "/api");
         System.out.println("AppConfigurator: Server fully initialized and ready.");
     }
-
 
     private void initializeDaos() {
         System.out.println("AppConfigurator: Initializing DAOs and checking data files...");
@@ -81,44 +80,53 @@ public class AppConfigurator {
             // 2. Handle employees.csv initialization
             boolean employeeDataFileExists = Files.exists(employeeDataPath);
             long employeeDataFileSize = employeeDataFileExists ? Files.size(employeeDataPath) : 0;
-            System.out.println("AppConfigurator: Employee data file '" + EMPLOYEES_DATA_CSV_FILENAME + "' exists: " + employeeDataFileExists + ", size: " + employeeDataFileSize + " bytes.");
+            System.out.println("AppConfigurator: Employee data file '" + EMPLOYEES_DATA_CSV_FILENAME + "' exists: "
+                    + employeeDataFileExists + ", size: " + employeeDataFileSize + " bytes.");
 
             if (!employeeDataFileExists || employeeDataFileSize == 0) {
-                System.out.println("AppConfigurator: Employee data file not found or is empty. Attempting to copy from resources and add header.");
+                System.out.println(
+                        "AppConfigurator: Employee data file not found or is empty. Attempting to copy from resources and add header.");
                 try {
                     // Copy from src/main/resources to data/employees.csv
                     ResourceCsvReader.copyResourceToFile(EMPLOYEES_STATIC_CSV_RESOURCE_NAME, employeeDataPath);
-                    System.out.println("AppConfigurator: Resource '" + EMPLOYEES_STATIC_CSV_RESOURCE_NAME + "' copied to " + employeeDataPath.toAbsolutePath());
+                    System.out.println("AppConfigurator: Resource '" + EMPLOYEES_STATIC_CSV_RESOURCE_NAME
+                            + "' copied to " + employeeDataPath.toAbsolutePath());
 
-                    // Check if file is still empty after copy (can happen if source resource is empty)
                     if (Files.size(employeeDataPath) == 0) {
-                        try (java.io.BufferedWriter writer = Files.newBufferedWriter(employeeDataPath, java.nio.file.StandardOpenOption.APPEND)) {
+                        try (java.io.BufferedWriter writer = Files.newBufferedWriter(employeeDataPath,
+                                java.nio.file.StandardOpenOption.APPEND)) {
                             writer.write(EMPLOYEE_CSV_HEADER);
                             writer.newLine();
-                            System.out.println("AppConfigurator: Added header to data/employees.csv (file was empty after copy).");
+                            System.out.println(
+                                    "AppConfigurator: Added header to data/employees.csv (file was empty after copy).");
                         }
                     } else {
-                        System.out.println("AppConfigurator: data/employees.csv has content after copy. Header not appended automatically.");
+                        System.out.println(
+                                "AppConfigurator: data/employees.csv has content after copy. Header not appended automatically.");
                     }
                 } catch (IOException e) {
-                    System.err.println("AppConfigurator: CRITICAL ERROR: Failed to copy initial employees.csv from resources: " + e.getMessage());
+                    System.err.println(
+                            "AppConfigurator: CRITICAL ERROR: Failed to copy initial employees.csv from resources: "
+                                    + e.getMessage());
                     e.printStackTrace();
                     throw new RuntimeException("Failed to initialize employees.csv data file.", e);
                 }
             } else {
-                System.out.println("AppConfigurator: data/employees.csv already exists and has content. Skipping initial copy.");
+                System.out.println(
+                        "AppConfigurator: data/employees.csv already exists and has content. Skipping initial copy.");
             }
 
             // 3. Initialize DAOs after file handling
             userDao = new CSVUserDao();
             System.out.println("AppConfigurator: CSVUserDao initialized.");
             // Assuming CSVUserDao creates users.csv if it doesn't exist upon initialization
-            // You might want to add similar checks for users.csv as you did for employees.csv
+            // add similar checks for users.csv as you did for employees.csv
             // if it's not being created reliably by CSVUserDao's constructor.
 
             employeeDao = new CSVEmployeeDao();
             System.out.println("AppConfigurator: CSVEmployeeDao initialized.");
-            System.out.println("AppConfigurator: Loaded " + employeeDao.getAllEmployees().size() + " employees from data/employees.csv.");
+            System.out.println("AppConfigurator: Loaded " + employeeDao.getAllEmployees().size()
+                    + " employees from data/employees.csv.");
 
         } catch (IOException | RuntimeException e) { // Catch both IOException and RuntimeException
             System.err.println("AppConfigurator: Failed during DAO initialization or file handling: " + e.getMessage());
@@ -141,8 +149,8 @@ public class AppConfigurator {
             System.out.println("AppConfigurator: Employee users found: " + employeeUsersCount);
             System.out.println("AppConfigurator: Total employees found: " + initialEmployeeCount);
 
-
-            // Seed only if admin doesn't exist OR if employee users are fewer than actual employees
+            // Seed only if admin doesn't exist OR if employee users are fewer than actual
+            // employees
             if (!adminExists || employeeUsersCount < initialEmployeeCount) {
                 System.out.println("AppConfigurator: Seeding required based on current user and employee counts.");
                 seedAdminAndEmployeeUsers();
@@ -180,7 +188,8 @@ public class AppConfigurator {
         for (String employeeNumber : employeeNumbers) {
             String username = "user-" + employeeNumber;
             if (userDao.findByUsername(username).isEmpty()) { // Only create if user doesn't already exist
-                User user = new User(UUID.randomUUID().toString(), username, userHashedPassword, ""); // Use userHashedPassword
+                User user = new User(UUID.randomUUID().toString(), username, userHashedPassword, ""); // Use
+                                                                                                      // userHashedPassword
                 userDao.saveUser(user);
                 newEmployeeUsersCreated++;
                 System.out.println("AppConfigurator: Created employee user: " + username);
@@ -202,7 +211,7 @@ public class AppConfigurator {
         System.out.println("AppConfigurator: Registering controllers...");
         AuthController.registerRoutes(app, authService);
         EmployeeController.registerRoutes(app, employeeService);
-        // Re-add your protected hello route if you want it
+
         app.get("/api/protected/hello", ctx -> {
             User currentUser = ctx.attribute("currentUser");
             if (currentUser != null) {

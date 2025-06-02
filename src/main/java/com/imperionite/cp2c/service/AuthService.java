@@ -8,7 +8,7 @@ import com.imperionite.cp2c.dto.AuthResponse;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern; // Import Pattern
+import java.util.regex.Pattern;
 
 /**
  * Service class handling authentication and user management logic.
@@ -18,7 +18,6 @@ public class AuthService {
 
     // Regex pattern for username: must start with "user-" followed by 5 digits
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^user-\\d{5}$");
-
 
     public AuthService(UserDao userDao) {
         this.userDao = userDao;
@@ -47,7 +46,8 @@ public class AuthService {
             String token = TokenUtil.generateToken(user.getId(), user.getUsername());
             user.setToken(token);
             userDao.saveUser(user); // Save user with new token
-            System.out.println("AuthService: Login successful for user: " + user.getUsername() + ", generated token: " + token);
+            System.out.println(
+                    "AuthService: Login successful for user: " + user.getUsername() + ", generated token: " + token);
             return new AuthResponse(user.getId(), user.getUsername(), token, "Login successful");
         } else {
             System.out.println("AuthService: Password verification failed for user: " + user.getUsername());
@@ -58,16 +58,19 @@ public class AuthService {
     /**
      * Registers a new user.
      * Includes validation for username format.
+     * 
      * @param username The desired username.
      * @param password The desired password.
-     * @return AuthResponse with user details and token if successful, or an error message.
+     * @return AuthResponse with user details and token if successful, or an error
+     *         message.
      */
     public AuthResponse registerUser(String username, String password) {
         System.out.println("AuthService: Attempting to register new user: " + username);
 
         // 1. Validate username format
         if (!USERNAME_PATTERN.matcher(username).matches()) {
-            System.out.println("AuthService: Registration failed - Username '" + username + "' does not match required format (user-#####).");
+            System.out.println("AuthService: Registration failed - Username '" + username
+                    + "' does not match required format (user-#####).");
             return new AuthResponse(null, null, null, "Username must be in the format user-##### (e.g., user-12345)");
         }
 
@@ -97,7 +100,9 @@ public class AuthService {
 
     /**
      * Deletes a user by their ID.
-     * This method is intended to be called by other services (e.g., EmployeeService) for cascading deletions.
+     * This method is intended to be called by other services (e.g.,
+     * EmployeeService) for cascading deletions.
+     * 
      * @param userId The ID of the user to delete.
      * @return true if deletion was successful, false otherwise.
      */
@@ -107,11 +112,12 @@ public class AuthService {
             // Need to find the user by ID first to get the username for logging,
             // and to ensure the user exists before attempting deletion.
             Optional<User> userOptional = userDao.getAllUsers().stream()
-                                            .filter(u -> u.getId().equals(userId))
-                                            .findFirst();
+                    .filter(u -> u.getId().equals(userId))
+                    .findFirst();
             if (userOptional.isPresent()) {
                 userDao.deleteUser(userOptional.get().getId()); // Pass the actual ID to DAO
-                System.out.println("AuthService: User '" + userOptional.get().getUsername() + "' (ID: " + userId + ") deleted successfully.");
+                System.out.println("AuthService: User '" + userOptional.get().getUsername() + "' (ID: " + userId
+                        + ") deleted successfully.");
                 return true;
             } else {
                 System.out.println("AuthService: User with ID '" + userId + "' not found for deletion.");
@@ -127,16 +133,19 @@ public class AuthService {
      * Validates a given token. In a real application, this would involve
      * checking token expiration, signature (for JWTs), etc.
      * For this simple implementation, we just check if any user has this token.
+     * 
      * @param token The token to validate.
      * @return The User associated with the token if valid, null otherwise.
      */
     public User validateToken(String token) {
-        System.out.println("AuthService: validateToken called with token: " + (token != null ? token.substring(0, Math.min(token.length(), 10)) + "..." : "null")); // Log first 10 chars
+        System.out.println("AuthService: validateToken called with token: "
+                + (token != null ? token.substring(0, Math.min(token.length(), 10)) + "..." : "null")); // Log first 10
+                                                                                                        // chars
         if (token == null || token.isEmpty()) {
             System.out.println("AuthService: Token is null or empty during validation. Returning null.");
             return null;
         }
-        
+
         User foundUser = userDao.getAllUsers().stream()
                 .filter(u -> u.getToken() != null && u.getToken().equals(token))
                 .findFirst()
@@ -145,7 +154,8 @@ public class AuthService {
         if (foundUser != null) {
             System.out.println("AuthService: Token valid for user: " + foundUser.getUsername());
         } else {
-            System.out.println("AuthService: Token '" + (token.substring(0, Math.min(token.length(), 10)) + "...") + "' not found for any user. Returning null.");
+            System.out.println("AuthService: Token '" + (token.substring(0, Math.min(token.length(), 10)) + "...")
+                    + "' not found for any user. Returning null.");
         }
         return foundUser;
     }

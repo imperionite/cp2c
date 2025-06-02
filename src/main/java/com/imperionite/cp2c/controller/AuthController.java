@@ -34,7 +34,8 @@ public class AuthController {
             if (loginRequest == null || loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
                 ctx.status(400); // Bad Request
                 System.out.println("AuthController: Bad Request - Username and password are required.");
-                ctx.json(new MessageResponse("Username and password are required")); // Javalin handles JSON serialization
+                ctx.json(new MessageResponse("Username and password are required")); // Javalin handles JSON
+                                                                                     // serialization
                 return; // End processing for this request
             }
 
@@ -59,7 +60,8 @@ public class AuthController {
 
         // POST /api/register endpoint for user registration (PROTECTED)
         // This endpoint requires a valid token from an *admin* user or similar,
-        // as per typical REST API security patterns for user creation by privileged users.
+        // as per typical REST API security patterns for user creation by privileged
+        // users.
         app.post("/api/register", ctx -> {
             System.out.println("AuthController: Received registration request to /api/register.");
             // Authentication already handled by before filter
@@ -82,7 +84,8 @@ public class AuthController {
                 ctx.status(201); // Created
                 System.out.println("AuthController: User registered successfully: " + registerRequest.getUsername());
             } else {
-                // AuthService will return an error message if username already exists or format is wrong
+                // AuthService will return an error message if username already exists or format
+                // is wrong
                 ctx.status(409); // Conflict or 400 Bad Request depending on exact error reason
                 System.out.println("AuthController: User registration failed for: " + registerRequest.getUsername()
                         + ". Reason: " + authResponse.getMessage());
@@ -108,7 +111,7 @@ public class AuthController {
             System.out.println("AuthController: Authorization header missing or invalid format. Halting with 401.");
             ctx.status(401); // Unauthorized
             ctx.json(new MessageResponse("Authorization token required (Bearer token format)"));
-            ctx.host(); // CORRECTED: Use ctx.halt() to stop the request processing
+            ctx.host();
             return;
         }
 
@@ -122,7 +125,7 @@ public class AuthController {
             System.out.println("AuthController: Invalid or expired token. Halting with 401.");
             ctx.status(401); // Unauthorized
             ctx.json(new MessageResponse("Invalid or expired token"));
-            ctx.host(); // CORRECTED: Use ctx.halt() to stop the request processing
+            ctx.host();
             return;
         }
 
@@ -132,25 +135,4 @@ public class AuthController {
         System.out.println("AuthController: Authentication successful for user: " + authenticatedUser.getUsername());
     }
 
-    // You need to define MessageResponse DTO if it's not already defined elsewhere.
-    // Example:
-    /*
-    package com.imperionite.cp2c.dto;
-
-    public class MessageResponse {
-        private String message;
-
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
-    */
 }

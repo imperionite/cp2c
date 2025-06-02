@@ -23,7 +23,8 @@ public class CsvFileHandler<T> {
     private final Function<T, String> objectSerializer; // Function to serialize an object into a CSV line
     private final boolean skipHeader; // New field to indicate if the first line is a header
 
-    public CsvFileHandler(String filename, Function<String, T> lineParser, Function<T, String> objectSerializer, boolean skipHeader) {
+    public CsvFileHandler(String filename, Function<String, T> lineParser, Function<T, String> objectSerializer,
+            boolean skipHeader) {
         // Ensure the data directory exists
         Path dataDir = Paths.get("data"); // Changed to "data" for consistent storage
         try {
@@ -61,7 +62,8 @@ public class CsvFileHandler<T> {
      */
     public List<T> readAll() {
         if (!Files.exists(filePath)) {
-            System.out.println("CsvFileHandler: CSV file does not exist, returning empty list: " + filePath.toAbsolutePath());
+            System.out.println(
+                    "CsvFileHandler: CSV file does not exist, returning empty list: " + filePath.toAbsolutePath());
             return new ArrayList<>(); // Return an empty list if file doesn't exist yet
         }
 
@@ -72,14 +74,15 @@ public class CsvFileHandler<T> {
                 System.out.println("CsvFileHandler: Skipping header: " + headerLine);
             }
             records = reader.lines()
-                            .filter(line -> !line.trim().isEmpty()) // Ignore empty lines
-                            .map(lineParser)
-                            .filter(java.util.Objects::nonNull) // Filter out nulls from parser
-                            .collect(Collectors.toList());
+                    .filter(line -> !line.trim().isEmpty()) // Ignore empty lines
+                    .map(lineParser)
+                    .filter(java.util.Objects::nonNull) // Filter out nulls from parser
+                    .collect(Collectors.toList());
             System.out.println("CsvFileHandler: Read " + records.size() + " records from " + filePath.getFileName());
 
         } catch (IOException e) {
-            System.err.println("CsvFileHandler: Error reading CSV file " + filePath.getFileName() + ": " + e.getMessage());
+            System.err.println(
+                    "CsvFileHandler: Error reading CSV file " + filePath.getFileName() + ": " + e.getMessage());
             // Optionally rethrow as a custom runtime exception if critical
         }
         return records;
@@ -92,36 +95,42 @@ public class CsvFileHandler<T> {
      */
     public void writeAll(List<T> records) {
         try (BufferedWriter writer = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING)) {
-            // Note: This method does NOT write a header. If a header is needed, use writeHeaderAndAll.
+            // Note: This method does NOT write a header. If a header is needed, use
+            // writeHeaderAndAll.
             for (T record : records) {
                 writer.write(objectSerializer.apply(record));
                 writer.newLine();
             }
             System.out.println("CsvFileHandler: Wrote " + records.size() + " records to " + filePath.getFileName());
         } catch (IOException e) {
-            System.err.println("CsvFileHandler: Error writing to CSV file " + filePath.getFileName() + ": " + e.getMessage());
+            System.err.println(
+                    "CsvFileHandler: Error writing to CSV file " + filePath.getFileName() + ": " + e.getMessage());
             // Optionally rethrow as a custom runtime exception if critical
         }
     }
 
     /**
-     * Writes a header and then a list of records to the CSV file, overwriting existing content.
+     * Writes a header and then a list of records to the CSV file, overwriting
+     * existing content.
      * This is useful for initial file creation where a header is desired.
      *
-     * @param header The header string to write as the first line.
+     * @param header  The header string to write as the first line.
      * @param records The list of objects to write.
      */
     public void writeHeaderAndAll(String header, List<T> records) {
-        try (BufferedWriter writer = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING)) { // Use TRUNCATION_EXISTING
+        try (BufferedWriter writer = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING)) { // Use
+                                                                                                                // TRUNCATION_EXISTING
             writer.write(header);
             writer.newLine();
             for (T record : records) {
                 writer.write(objectSerializer.apply(record));
                 writer.newLine();
             }
-            System.out.println("CsvFileHandler: Wrote header and " + records.size() + " records to " + filePath.getFileName());
+            System.out.println(
+                    "CsvFileHandler: Wrote header and " + records.size() + " records to " + filePath.getFileName());
         } catch (IOException e) {
-            System.err.println("CsvFileHandler: Error writing header and records to CSV file " + filePath.getFileName() + ": " + e.getMessage());
+            System.err.println("CsvFileHandler: Error writing header and records to CSV file " + filePath.getFileName()
+                    + ": " + e.getMessage());
             throw new RuntimeException("Failed to write header and records to CSV file.", e);
         }
     }

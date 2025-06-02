@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * CSV-based implementation of EmployeeDao, now using CsvFileHandler for read/write
+ * CSV-based implementation of EmployeeDao, now using CsvFileHandler for
+ * read/write
  * operations on employees.csv in the data directory.
  */
 public class CSVEmployeeDao implements EmployeeDao {
@@ -22,7 +23,8 @@ public class CSVEmployeeDao implements EmployeeDao {
                 Employee::toCsvLine, // Use the new toCsvLine method in Employee
                 true // employees.csv WILL have a header
         );
-        // Initial load is handled by CsvFileHandler's readAll, which is called by getAllEmployees
+        // Initial load is handled by CsvFileHandler's readAll, which is called by
+        // getAllEmployees
         System.out.println("CSVEmployeeDao: Initialized with CsvFileHandler for " + CSV_FILENAME);
     }
 
@@ -70,9 +72,11 @@ public class CSVEmployeeDao implements EmployeeDao {
         }
         if (found) {
             csvFileHandler.writeHeaderAndAll(EMPLOYEE_CSV_HEADER, employees);
-            System.out.println("CSVEmployeeDao: Updated employee " + updatedEmployee.getEmployeeNumber() + " in " + CSV_FILENAME);
+            System.out.println(
+                    "CSVEmployeeDao: Updated employee " + updatedEmployee.getEmployeeNumber() + " in " + CSV_FILENAME);
         } else {
-            System.out.println("CSVEmployeeDao: Employee " + updatedEmployee.getEmployeeNumber() + " not found for update.");
+            System.out.println(
+                    "CSVEmployeeDao: Employee " + updatedEmployee.getEmployeeNumber() + " not found for update.");
         }
         return found;
     }

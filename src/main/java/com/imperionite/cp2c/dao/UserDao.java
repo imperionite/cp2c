@@ -9,7 +9,10 @@ import java.util.Optional;
  */
 public interface UserDao {
     Optional<User> findByUsername(String username);
+
     void saveUser(User user); // Can be used for create and update
-    void deleteUser(String userId); // New method for deleting user
+
+    void deleteUser(String userId); // for deleting user
+
     List<User> getAllUsers();
 }
