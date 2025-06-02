@@ -1,0 +1,83 @@
+#### VARIABLES
+@token=ba01dfbf-1bab-4247-a295-94cedd0d49bd
+####################################
+
+# The default users for login:
+# username: admin or user-{employee number}
+# password: adminPassword (admin) & userPassword (common for normal users/employees)
+
+### Login
+POST http://localhost:4567/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "adminPassword"
+}
+
+### Sanity check for login
+### All endpoints starting in /api/protected/* are protected routes
+GET http://localhost:4567/api/protected/hello HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### List all employees with prescribed attributes
+GET http://localhost:4567/api/protected/employees HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Full employee details by employee number
+GET http://localhost:4567/api/protected/employees/10033 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Register new user; protected route
+POST http://localhost:4567/api/register HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "username": "user-10035",
+    "password": "userPassword"
+}
+
+### Create new employee
+POST http://localhost:4567/api/protected/employees HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "employeeNumber": "10035",
+  "lastName": "Santoss",
+  "firstName": "Beatrizz",
+  "birthday": "08/07/1991",
+  "address": "Agapita Building, Metro Manila",
+  "phoneNumber": "526-639-512",
+  "sssNumber": "20-2987501-6",
+  "philhealthNumber": "918460050078",
+  "tinNumber": "911-529-713-001",
+  "pagibigNumber": "874042259379",
+  "status": "Regular",
+  "position": "Customer Service and Relations 2",
+  "immediateSupervisor": "Reyes, Isabella",
+  "basicSalary": 52670,
+  "riceSubsidy": 1500,
+  "phoneAllowance": 1000,
+  "clothingAllowance": 1000,
+  "grossSemiMonthlyRate": 26335,
+  "hourlyRate": 313.51
+}
+
+### Update employee by employee number
+PATCH http://localhost:4567/api/protected/employees/10035 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+   "lastName": "New Surname"
+}
+
+### Delete employee by employee number
+DELETE http://localhost:4567/api/protected/employees/10035 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}

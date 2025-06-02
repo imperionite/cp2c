@@ -34,3 +34,19 @@ All essential background, rationale, and initial API endpoint documentation are 
 - **Updated Documentation:** Enhanced and updated documentation, with references to class diagrams ([see here](https://github.com/imperionite/cp2a/blob/main/CLASS_DIAGRAM.md)) and new features added in this phase.
 
 ---
+
+## CLI Commands
+
+```sh
+# ensure that employees.csv located in /src/main/resources exist
+# and /data direcory at root of the project generated from last run is deleted
+# clean & re-build project
+mvn clean package
+# clean, compile and execute one liner command
+mvn clean compile exec:java
+# check running process
+lsof -i :4567
+# stop the process
+kill -9 <PID>
+
+```
