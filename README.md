@@ -42,8 +42,8 @@ All essential background, rationale, and initial API endpoint documentation are 
 # and /data direcory at root of the project generated from last run is deleted
 # clean & re-build project
 mvn clean package
-# clean, compile and execute one liner command
-mvn clean compile exec:java
+# clean, compile and execute one liner command; always delete the data directory for every code changes
+rm -rf data && mvn clean compile exec:java
 # check running process
 lsof -i :4567
 # stop the process

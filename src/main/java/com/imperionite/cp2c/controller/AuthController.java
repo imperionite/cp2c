@@ -14,29 +14,35 @@ import io.javalin.http.Context;
  */
 public class AuthController {
 
-    // private static final Gson gson = new Gson();
-
     /**
-     * Registers all authentication routes.
+     * Registers all authentication routes and before-filters.
      *
      * @param app         The Javalin app instance to register routes with.
      * @param authService The AuthService instance to use for business logic.
      */
     public static void registerRoutes(Javalin app, AuthService authService) {
 
+        // IMPORTANT: Register before-filters *before* their corresponding routes
+        // to ensure they are applied correctly.
+
+        // Before filter to check for authentication token on protected routes
+        // This filter will execute *before* any handler for paths matching "/api/protected/*"
+        // or exactly "/api/register".
+        app.before("/api/protected/*", ctx -> authenticate(ctx, authService));
+        app.before("/api/register", ctx -> authenticate(ctx, authService));
+
         // POST /api/login endpoint for user authentication (NOT PROTECTED)
+        // This is a public endpoint allowing users to obtain a token.
         app.post("/api/login", ctx -> {
             System.out.println("AuthController: Received login request to /api/login.");
 
-            // Use ctx.bodyAsClass for direct deserialization by Javalin
             LoginRequest loginRequest = ctx.bodyAsClass(LoginRequest.class);
 
             if (loginRequest == null || loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
                 ctx.status(400); // Bad Request
-                System.out.println("AuthController: Bad Request - Username and password are required.");
-                ctx.json(new MessageResponse("Username and password are required")); // Javalin handles JSON
-                                                                                     // serialization
-                return; // End processing for this request
+                System.out.println("AuthController: Bad Request - Username and password are required for login.");
+                ctx.json(new MessageResponse("Username and password are required"));
+                return; // Stop further processing for this request
             }
 
             AuthResponse authResponse = authService.login(loginRequest.getUsername(), loginRequest.getPassword());
@@ -48,23 +54,17 @@ public class AuthController {
                 ctx.status(401); // Unauthorized
                 System.out.println("AuthController: Login failed for user: " + loginRequest.getUsername());
             }
-            ctx.json(authResponse); // Javalin handles JSON serialization
+            ctx.json(authResponse);
         });
 
-        // Before filter to check for authentication token on protected routes
-        // All routes under /api/protected/* are protected.
-        // Also, /api/register is now protected.
-        // Use lambda to pass authService to the authenticate method
-        app.before("/api/protected/*", ctx -> authenticate(ctx, authService));
-        app.before("/api/register", ctx -> authenticate(ctx, authService));
 
         // POST /api/register endpoint for user registration (PROTECTED)
-        // This endpoint requires a valid token from an *admin* user or similar,
-        // as per typical REST API security patterns for user creation by privileged
-        // users.
+        // This endpoint *requires* a valid token to register a new user.
+        // The authentication logic is handled by the `before` filter registered above.
         app.post("/api/register", ctx -> {
             System.out.println("AuthController: Received registration request to /api/register.");
-            // Authentication already handled by before filter
+            // If the request reaches this point, it means the `authenticate` before-filter
+            // has successfully validated the token and stored the authenticated user in the context.
 
             RegisterRequest registerRequest = ctx.bodyAsClass(RegisterRequest.class);
 
@@ -84,9 +84,8 @@ public class AuthController {
                 ctx.status(201); // Created
                 System.out.println("AuthController: User registered successfully: " + registerRequest.getUsername());
             } else {
-                // AuthService will return an error message if username already exists or format
-                // is wrong
-                ctx.status(409); // Conflict or 400 Bad Request depending on exact error reason
+                // AuthService will return an error message if username already exists or format is wrong
+                ctx.status(409); // Conflict (e.g., username already exists) or 400 Bad Request (e.g., invalid format)
                 System.out.println("AuthController: User registration failed for: " + registerRequest.getUsername()
                         + ". Reason: " + authResponse.getMessage());
             }
@@ -97,42 +96,44 @@ public class AuthController {
     /**
      * Authentication filter logic used by Javalin's `before` handler.
      * Extracts and validates the Authorization Bearer token.
-     * Sets the authenticated User object as an attribute on the context if
-     * successful.
+     * If authentication fails, it sets the appropriate status and response,
+     * and CRITICALLY, halts the request processing using `return;`.
+     * If successful, it stores the authenticated User object as an attribute on the context.
      *
      * @param ctx         The Javalin Context object.
      * @param authService The AuthService instance.
      */
     public static void authenticate(Context ctx, AuthService authService) {
-        System.out.println("AuthController: Entering authentication filter.");
-        String authorizationHeader = ctx.header("Authorization"); // Use ctx.header()
+        System.out.println("AuthController: Entering authentication filter for path: " + ctx.path());
+        String authorizationHeader = ctx.header("Authorization");
 
+        // 1. Check for Authorization header presence and format
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             System.out.println("AuthController: Authorization header missing or invalid format. Halting with 401.");
             ctx.status(401); // Unauthorized
             ctx.json(new MessageResponse("Authorization token required (Bearer token format)"));
-            ctx.host();
-            return;
+            return; // <<< CRITICAL: Stop the request processing here
         }
 
-        String token = authorizationHeader.substring("Bearer ".length()).trim(); // Trim for safety
+        // 2. Extract the token
+        String token = authorizationHeader.substring("Bearer ".length()).trim();
         System.out.println(
-                "AuthController: Extracted token: " + (token.substring(0, Math.min(token.length(), 10)) + "..."));
+                "AuthController: Extracted token: " + (token.length() > 10 ? token.substring(0, 10) + "..." : token)); // Log first 10 chars or full if shorter
 
+        // 3. Validate the token using AuthService
         User authenticatedUser = authService.validateToken(token);
 
+        // 4. Check if token validation was successful
         if (authenticatedUser == null) {
-            System.out.println("AuthController: Invalid or expired token. Halting with 401.");
+            System.out.println("AuthController: Invalid or expired token. Halting with 401 for path: " + ctx.path());
             ctx.status(401); // Unauthorized
             ctx.json(new MessageResponse("Invalid or expired token"));
-            ctx.host();
-            return;
+            return; // <<< CRITICAL: Stop the request processing here
         }
 
-        // If authentication is successful, store the user in the context for downstream
-        // handlers
+        // 5. If authentication is successful, store the user in the context for downstream handlers
         ctx.attribute("currentUser", authenticatedUser);
-        System.out.println("AuthController: Authentication successful for user: " + authenticatedUser.getUsername());
+        System.out.println("AuthController: Authentication successful for user: " + authenticatedUser.getUsername() + " accessing path: " + ctx.path());
+        // If execution reaches here, the request will proceed to the next handler in the chain (e.g., the route handler).
     }
-
 }
