@@ -50,6 +50,8 @@ const EmployeeList = () => {
     "Pag-IBIG",
   ];
 
+  // console.log (auth?.token)
+
   return (
     <>
       <TableContainer component={Paper} sx={{ mt: 4, maxHeight: 600 }}>
@@ -63,25 +65,25 @@ const EmployeeList = () => {
           </TableHead>
           <TableBody>
             {employees.map((emp) => (
-              <TableRow key={emp.employeeNumber}>
+              <TableRow key={emp?.employeeNumber}>
                 <TableCell>
                   <Button
                     variant="outlined"
                     size="small"
                     onClick={(e) => {
                       e.preventDefault();
-                      navigate(`/employees/${emp.employeeNumber}`);
+                      navigate(`/employees/${emp?.employeeNumber}`);
                     }}
                   >
                     {emp.employeeNumber}
                   </Button>
                 </TableCell>
-                <TableCell>{emp.firstName}</TableCell>
-                <TableCell>{emp.lastName}</TableCell>
-                <TableCell>{emp.sssNumber}</TableCell>
-                <TableCell>{emp.philhealthNumber}</TableCell>
-                <TableCell>{emp.tinNumber}</TableCell>
-                <TableCell>{emp.pagibigNumber}</TableCell>
+                <TableCell>{emp?.firstName}</TableCell>
+                <TableCell>{emp?.lastName}</TableCell>
+                <TableCell>{emp?.sssNumber}</TableCell>
+                <TableCell>{emp?.philhealthNumber}</TableCell>
+                <TableCell>{emp?.tinNumber}</TableCell>
+                <TableCell>{emp?.pagibigNumber}</TableCell>
               </TableRow>
             ))}
           </TableBody>

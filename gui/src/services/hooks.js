@@ -42,7 +42,7 @@ export const useEmployeeBasicInfo = (accessToken) => {
 
 export const useFetchByEmployeeNumber = (accessToken, employeeNumber) => {
   return useQuery({
-    queryKey: ["fetchByEmployeeNum", employeeNumber],
+    queryKey: employeeKeys.detail(employeeNumber),
     queryFn: () => getEmployeeByEmployeeNumber(employeeNumber),
     staleTime: 5 * 60 * 1000,
     retry: 1,

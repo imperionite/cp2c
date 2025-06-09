@@ -41,7 +41,7 @@ const Login = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
 
       setAuth({
-        id: data?.id,
+        userId: data?.userId,
         username: data?.username,
         token: data?.token,
       });

@@ -1,5 +1,5 @@
 #### VARIABLES
-@token=0553967c-bbc9-42f3-93c1-b998168f1c67
+@token=9efc2568-fe1c-4f69-b0ff-b706b79eafce
 @userId=3a7fec77-0795-4699-9495-cad7814217af
 ####################################
 
@@ -12,40 +12,35 @@ POST http://localhost:4567/api/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "user-10002",
+    "username": "user-10007",
     "password": "userPassword"
 }
-
-### Sanity check for login
-### All endpoints starting in /api/protected/* are protected routes
-GET http://localhost:4567/api/protected/hello HTTP/1.1
-Content-Type: application/json
-Authorization: Bearer {{token}}
 
 ### List all employees with prescribed attributes
 GET http://localhost:4567/api/protected/employees HTTP/1.1
 Content-Type: application/json
-
+Authorization: Bearer {{token}}
 
 ### Full employee details by employee number
-GET http://localhost:4567/api/protected/employees/10034 HTTP/1.1
+GET http://localhost:4567/api/protected/employees/10010 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 
 ### Register new user; protected route
 POST http://localhost:4567/api/register HTTP/1.1
 Content-Type: application/json
-
+Authorization: Bearer {{token}}
 
 {
     "username": "user-10035",
-    "password": "userPassword"
+    "password": "userPasswordd"
 }
 
 ### Create new employee
 POST http://localhost:4567/api/protected/employees HTTP/1.1
 Content-Type: application/json
-
+Authorization: Bearer {{token}}
 
 {
   "employeeNumber": "10035",
@@ -72,12 +67,13 @@ Content-Type: application/json
 ### Update employee by employee number
 PATCH http://localhost:4567/api/protected/employees/10035 HTTP/1.1
 Content-Type: application/json
-
+Authorization: Bearer {{token}}
 
 {
    "lastName": "New Surname"
 }
 
 ### Delete employee by employee number
-DELETE http://localhost:4567/api/protected/employees/10035 HTTP/1.1
+DELETE http://localhost:4567/api/protected/employees/10001 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{token}}

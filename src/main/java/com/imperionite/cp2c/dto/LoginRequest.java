@@ -1,13 +1,19 @@
 package com.imperionite.cp2c.dto;
 
 /**
- * DTO for login request payload.
+ * DTO for login requests, containing username and password.
  */
 public class LoginRequest {
     private String username;
     private String password;
 
+    // Default constructor for Jackson deserialization
     public LoginRequest() {
+    }
+
+    public LoginRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public String getUsername() {

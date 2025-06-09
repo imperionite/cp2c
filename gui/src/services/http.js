@@ -17,7 +17,7 @@ const http = axios.create({
 const getAccessToken = () => {
   const authAtom = localStorage.getItem("authAtom");
   let auth = authAtom ? JSON.parse(authAtom) : null;
-  return auth ? auth?.token : null;
+  return auth ? auth.token : null;
 };
 
 // Interceptor to add the Authorization header with the access token
@@ -59,12 +59,11 @@ http.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // For this setup, can't refresh the access token, so just log out
+      // Session expired or unauthorized. Log out the user.
       localStorage.removeItem("authAtom");
-      // You might also want to redirect to the login page here
       console.log("Session expired or unauthorized. Please log in again.");
-      // Trigger a logout event or redirect:
-      //window.location.href = "/"; // login route
+      // Redirect to login page (optional)
+      window.location.href = "/login"; 
       return Promise.reject(error);
     }
 
@@ -111,7 +110,7 @@ const getEmployeeBasicInfo = async () => {
 const getEmployeeByEmployeeNumber = async (employeeNumber) => {
   try {
     const response = await http.get(
-      `/api/employees/employeeNumber/${employeeNumber}`
+      `/api/protected/employees/${employeeNumber}`
     );
     return response.data;
   } catch (error) {

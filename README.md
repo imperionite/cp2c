@@ -37,16 +37,37 @@ All essential background, rationale, and initial API endpoint documentation are 
 
 ## CLI Commands
 
-```sh
-# ensure that employees.csv located in /src/main/resources exist
-# and /data direcory at root of the project generated from last run is deleted
-# clean & re-build project
-mvn clean package
-# clean, compile and execute one liner command; always delete the data directory for every code changes
-rm -rf data && mvn clean compile exec:java
-# check running process
-lsof -i :4567
-# stop the process
-kill -9 <PID>
+- **Ensure** `employees.csv` exists in `/src/main/resources` and delete `/data` directory generated from last run.
 
-```
+- **Clean and re-build project:**
+  ```sh
+  mvn clean package
+  ```
+- **Clean, compile, and execute one-liner command (deletes `data` directory on every code change):**
+  ```sh
+  rm -rf data && mvn clean compile exec:java
+  ```
+- **Run the jar file after deleting the `data` directory: The app run at port `4567`**
+  ```sh
+  rm -rf data && java -jar target/cp2c-1.0-SNAPSHOT.jar
+  ```
+- **Check running process on port 4567:**
+  ```sh
+  lsof -i :4567
+  ```
+- **Stop the process by PID:**
+  ```sh
+  kill -9 
+  ```
+- **Clear your local Maven repository cache for Javalin:**
+  ```sh
+  rm -rf ~/.m2/repository/io/javalin/
+  ```
+- **Force Maven to update dependencies:**
+  ```sh
+  mvn clean install -U
+  ```
+- **Clean NetBeans cache and reload project:**
+  ```sh
+  rm -rf ~/Library/Caches/NetBeans/
+  ```

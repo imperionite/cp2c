@@ -1,27 +1,31 @@
 package com.imperionite.cp2c.dto;
 
 /**
- * DTO for authentication response.
+ * DTO for authentication responses, including user details and token.
  */
 public class AuthResponse {
-    private String id;
+    private String userId;
     private String username;
     private String token;
-    private String message;
+    private String message; // For success or error messages
 
-    public AuthResponse(String id, String username, String token, String message) {
-        this.id = id;
+    // Default constructor for Jackson serialization/deserialization
+    public AuthResponse() {
+    }
+
+    public AuthResponse(String userId, String username, String token, String message) {
+        this.userId = userId;
         this.username = username;
         this.token = token;
         this.message = message;
     }
 
-    public String getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
