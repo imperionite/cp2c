@@ -15,10 +15,10 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.csv.CSVFormat; // Import Apache Commons CSV
-import org.apache.commons.csv.CSVParser; // Import Apache Commons CSV
-import org.apache.commons.csv.CSVPrinter; // Import Apache Commons CSV
-import org.apache.commons.csv.CSVRecord; // Import Apache Commons CSV
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 
 /**
  * Data Access Object for Employee entities, managing persistence to a CSV file.
@@ -42,7 +42,7 @@ public class EmployeeDao {
     private static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder()
             .setHeader(CSV_HEADERS_ARRAY) // Specify headers for reading and writing
             .setSkipHeaderRecord(true)    // Skip header when reading existing files
-            .setQuoteMode(org.apache.commons.csv.QuoteMode.MINIMAL) // Quote fields only when necessary (e.g., if they contain commas)
+            .setQuoteMode(org.apache.commons.csv.QuoteMode.MINIMAL) // Quote fields only when necessary
             .setTrim(true)                // Trim leading/trailing whitespace from fields
             .build();
 
@@ -73,13 +73,11 @@ public class EmployeeDao {
                 // Write only the header using CSVPrinter, then close
                 try (FileWriter fileWriter = new FileWriter(path.toFile());
                      CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS_ARRAY).build())) {
-                    // No need to print records, just the header is implicitly written by setHeader()
-                    System.out.println("EmployeeDao: Created new employees CSV file with header: " + path.toAbsolutePath());
+                    System.out.println("EmployeeDao: Created new users CSV file with header: " + path.toAbsolutePath());
                 }
             } catch (IOException e) {
-                System.err.println("EmployeeDao: Error creating employees CSV file '" + filePath + "': " + e.getMessage());
-                // Rethrow as runtime exception since persistence won't work without the file
-                throw new RuntimeException("Failed to initialize employees CSV file.", e);
+                System.err.println("EmployeeDao: Error creating users CSV file '" + filePath + "': " + e.getMessage());
+                throw new RuntimeException("Failed to initialize users CSV file.", e);
             }
         }
     }
@@ -107,7 +105,7 @@ public class EmployeeDao {
                 try {
                     data.add(mapCsvRecordToEmployee(csvRecord));
                 } catch (Exception e) {
-                    System.err.println("EmployeeDao: Error mapping CSV record: '" + csvRecord + "'. Skipping record. Error: " + e.getMessage());
+                    System.err.println("EmployeeDao: Error mapping CSV record: '" + csvRecord.toMap() + "'. Skipping record. Error: " + e.getMessage());
                 }
             }
             System.out.println("EmployeeDao: Loaded " + data.size() + " records from " + filePath);
@@ -141,13 +139,31 @@ public class EmployeeDao {
         String position = record.get("position");
         String immediateSupervisor = record.get("immediateSupervisor");
 
-        // Parse BigDecimal values safely
-        BigDecimal basicSalary = parseBigDecimal(record.get("basicSalary"), "basicSalary");
-        BigDecimal riceSubsidy = parseBigDecimal(record.get("riceSubsidy"), "riceSubsidy");
-        BigDecimal phoneAllowance = parseBigDecimal(record.get("phoneAllowance"), "phoneAllowance");
-        BigDecimal clothingAllowance = parseBigDecimal(record.get("clothingAllowance"), "clothingAllowance");
-        BigDecimal grossSemiMonthlyRate = parseBigDecimal(record.get("grossSemiMonthlyRate"), "grossSemiMonthlyRate");
-        BigDecimal hourlyRate = parseBigDecimal(record.get("hourlyRate"), "hourlyRate");
+        // Parse BigDecimal values safely WITH DEBUG LOGGING
+        // This logging will show exactly what string value is being parsed
+        String basicSalaryStr = record.get("basicSalary");
+        System.out.println("DEBUG: Parsing basicSalary: '" + basicSalaryStr + "'");
+        BigDecimal basicSalary = parseBigDecimal(basicSalaryStr, "basicSalary");
+
+        String riceSubsidyStr = record.get("riceSubsidy");
+        System.out.println("DEBUG: Parsing riceSubsidy: '" + riceSubsidyStr + "'");
+        BigDecimal riceSubsidy = parseBigDecimal(riceSubsidyStr, "riceSubsidy");
+
+        String phoneAllowanceStr = record.get("phoneAllowance");
+        System.out.println("DEBUG: Parsing phoneAllowance: '" + phoneAllowanceStr + "'");
+        BigDecimal phoneAllowance = parseBigDecimal(phoneAllowanceStr, "phoneAllowance");
+
+        String clothingAllowanceStr = record.get("clothingAllowance");
+        System.out.println("DEBUG: Parsing clothingAllowance: '" + clothingAllowanceStr + "'");
+        BigDecimal clothingAllowance = parseBigDecimal(clothingAllowanceStr, "clothingAllowance");
+
+        String grossSemiMonthlyRateStr = record.get("grossSemiMonthlyRate");
+        System.out.println("DEBUG: Parsing grossSemiMonthlyRate: '" + grossSemiMonthlyRateStr + "'");
+        BigDecimal grossSemiMonthlyRate = parseBigDecimal(grossSemiMonthlyRateStr, "grossSemiMonthlyRate");
+
+        String hourlyRateStr = record.get("hourlyRate");
+        System.out.println("DEBUG: Parsing hourlyRate: '" + hourlyRateStr + "'");
+        BigDecimal hourlyRate = parseBigDecimal(hourlyRateStr, "hourlyRate");
 
         return new Employee(
                 employeeNumber, lastName, firstName, birthday, address,
@@ -160,15 +176,19 @@ public class EmployeeDao {
     /**
      * Helper method to safely parse BigDecimal values from string parts.
      * Returns BigDecimal.ZERO if the part is empty or cannot be parsed.
+     * Now handles commas in numeric strings by removing them.
      */
     private BigDecimal parseBigDecimal(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
+            System.out.println("EmployeeDao: Parsing " + fieldName + ": Value is null or empty after trim. Defaulting to BigDecimal.ZERO.");
             return BigDecimal.ZERO;
         }
+        // Remove commas before attempting to parse
+        String cleanedValue = value.trim().replace(",", "");
         try {
-            return new BigDecimal(value.trim());
+            return new BigDecimal(cleanedValue);
         } catch (NumberFormatException e) {
-            System.err.println("EmployeeDao: Warning: Could not parse " + fieldName + " value '" + value + "'. Using BigDecimal.ZERO. Error: " + e.getMessage());
+            System.err.println("EmployeeDao: Warning: Could not parse " + fieldName + " value '" + value + "' (cleaned to '" + cleanedValue + "'). Using BigDecimal.ZERO. Error: " + e.getMessage());
             return BigDecimal.ZERO;
         }
     }

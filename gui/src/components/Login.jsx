@@ -50,8 +50,9 @@ const Login = () => {
       reset();
       navigate("/employees");
     },
-    onError: () => {
-      toast.error("Invalid login credentials!");
+    onError: (error) => {
+      toast.error(error);
+      
       navigate("/");
     },
   });

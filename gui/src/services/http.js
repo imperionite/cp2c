@@ -82,11 +82,6 @@ const login = async (data) => {
   }
 };
 
-const getUserProfile = async () => {
-  const response = await http.get("/api/users/auth/user/");
-  return response.data;
-};
-
 const getEmployeePartialDetails = async () => {
   try {
     const response = await http.get("/api/protected/employees");
@@ -94,16 +89,6 @@ const getEmployeePartialDetails = async () => {
   } catch (error) {
     console.error("Error fetching employee:", error);
     throw new Error("Failed to fetch employees list!");
-  }
-};
-
-const getEmployeeBasicInfo = async () => {
-  try {
-    const response = await http.get("/api/employees/basic-info");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching employee:", error);
-    throw new Error("Failed to fetch employee asic information!");
   }
 };
 
@@ -119,25 +104,28 @@ const getEmployeeByEmployeeNumber = async (employeeNumber) => {
   }
 };
 
-const getMonthlyCutoffs = async () => {
+const updateEmployee = async (employeeNumber, data) => {
   try {
-    const response = await http.get("/api/attendance/monthly-cutoffs"); // year-month
+    const response = await http.patch(`/api/protected/employees/${employeeNumber}`, data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching monthly cut-off:", error);
-    throw new Error("Failed to fetch monthly cut-off!");
+    console.error(`Error updating employee ${employeeNumber}:`, error);
+    throw new Error(error.response?.data?.message || `Failed to update employee ${employeeNumber}!`);
   }
 };
 
-const getMonthlyNet = async (employeeNumber, yearMonth) => {
+const deleteEmployee = async (employeeNumber) => {
   try {
-    const response = await http.get(
-      `/api/salary/monthly/net?employeeNumber=${employeeNumber}&yearMonth=${yearMonth}`
-    );
-    return response.data;
+    const response = await http.delete(`/api/protected/employees/${employeeNumber}`);
+    // For 204 No Content, response.data might be empty or undefined.
+    // Return a success message or simply check response.status
+    if (response.status === 204) {
+      return { message: `Employee ${employeeNumber} deleted successfully.` };
+    }
+    return response.data; // For other successful statuses that might return data
   } catch (error) {
-    console.error("Error fetching calculating employee salary", error);
-    throw new Error("Failed calculating employee salaries and deductions!");
+    console.error(`Error deleting employee ${employeeNumber}:`, error);
+    throw new Error(error.response?.data?.message || `Failed to delete employee ${employeeNumber}!`);
   }
 };
 
@@ -145,10 +133,9 @@ export {
   login,
   // signup,
   getAccessToken,
-  getUserProfile,
   getEmployeePartialDetails,
-  getEmployeeBasicInfo,
   getEmployeeByEmployeeNumber,
-  getMonthlyCutoffs,
-  getMonthlyNet,
+  updateEmployee,
+  deleteEmployee
+
 };

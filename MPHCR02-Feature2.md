@@ -6,5 +6,8 @@ This laboratory exercise and homework are designed to fulfill the requirements o
 
 **Note**: 
 In accordance with the course requirements and the mentor’s recommendation to use CSV files for data management, I have created a new project repository as a continuation of the `CP2A` project (Milestone 1), named **CP2C**. This new project differs in the technologies employed: it uses [Javalin](https://javalin.io), a Java-based microframework; CSV files instead of a database; and basic token authentication rather than JWT. The goal is to complete the project using these technologies through to the terminal assessment, prioritizing less framework's abstraction compared to the enterprise overhead of the previous poject done in MS 1, simplicity and modularity.
-
 ---
+
+## Manual API Tests 
+
+ - [Video Demo Link](https://drive.google.com/file/d/1XRpQnfmdIi2cGKM86hdhWbnOZowG5QN0/view?usp=sharing)
