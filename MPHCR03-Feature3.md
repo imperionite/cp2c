@@ -1,4 +1,4 @@
-# Laboratory Work #5 & Homework #5: MotorPH Employee Application with View and Create Record Functionalities
+# Laboratory Work #5 & Homework #5: MotorPH Employee Application with Record Update and Delete Functionalities
 
 This laboratory exercise and homework are designed to fulfill the requirements outlined in [MotorPH's Change Requests Form](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?usp=sharing), specifically:
 
