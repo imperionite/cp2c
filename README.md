@@ -49,7 +49,7 @@ All essential background, rationale, and initial API endpoint documentation are 
   ```
 - **Run the jar file after deleting the `data` directory: The app run at port `4567`**
   ```sh
-  rm -rf data && java -jar target/cp2c-1.0-SNAPSHOT.jar
+  rm -rf data && mvn clean package && java -jar target/cp2c-1.0-SNAPSHOT.jar
   ```
 - **Check running process on port 4567:**
   ```sh

@@ -34,3 +34,31 @@ In accordance with the course requirements and the mentor’s recommendation to 
 ## GUI: View, Update, Delete Records
 
 - [Video Demo Link](https://drive.google.com/file/d/1OP4RsoPZEO3RLHX1VDMBomlUhFdAqS64/view?usp=sharing)
+
+## Screenshots
+
+**Login**
+
+![Login](https://drive.google.com/uc?id=1ohgES3a6N0AZIaeIuxPXC5b2H82aoz0U)
+
+**User Login Success**
+
+![User Login Success](https://drive.google.com/uc?id=1Jcwtfic-fpPo4a0FXY6Xzs0QmQWXvcLh)
+
+**Specific Employee Detail**
+
+![Employee Detail](https://drive.google.com/uc?id=1tMgunhip_L6iUns_3rFHmYQsdjbsZKTs)
+
+**Auth User Update Employee Information**
+
+![Update Employee Detail](https://drive.google.com/uc?id=1WzhEUseji0LDSiXhtczAMIBtmeLS6V6l)
+
+**Update Employee Information Success**
+
+![Update Employee Success](https://drive.google.com/uc?id=1pC48Uct5FTiJmdDhqLE1OFuDBV3HXcIY)
+
+**Deleting Employee/User**
+
+![Delete Employee/User](https://drive.google.com/uc?id=11WcbNWP3aG6UB_bXL6cAdBpSrGUFVSDD)
+
+
