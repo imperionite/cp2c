@@ -1,29 +1,18 @@
 package com.imperionite.cp2c.dao;
 
 import com.imperionite.cp2c.model.Employee;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
-
 /**
  * Data Access Object for Employee entities, managing persistence to a CSV file.
- * This class handles reading Employee data from and writing to `employees.csv`
- * using the Apache Commons CSV library for robust parsing and writing.
+ * This class handles reading Employee data from and writing to `employees.csv`.
  * It includes basic in-memory caching and thread-safety for concurrent access.
  */
 public class EmployeeDao {
@@ -32,221 +21,140 @@ public class EmployeeDao {
     private final ReadWriteLock lock = new ReentrantReadWriteLock(); // For thread-safe access
 
     // CSV header for the employees file
-    private static final String[] CSV_HEADERS_ARRAY = {
-            "employeeNumber", "lastName", "firstName", "birthday", "address",
-            "phoneNumber", "sssNumber", "philhealthNumber", "tinNumber", "pagibigNumber",
-            "status", "position", "immediateSupervisor", "basicSalary", "riceSubsidy",
-            "phoneAllowance", "clothingAllowance", "grossSemiMonthlyRate", "hourlyRate"
-    };
-    // CSVFormat for reading and writing, configured with headers and quoting
-    private static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder()
-            .setHeader(CSV_HEADERS_ARRAY) // Specify headers for reading and writing
-            .setSkipHeaderRecord(true)    // Skip header when reading existing files
-            .setQuoteMode(org.apache.commons.csv.QuoteMode.MINIMAL) // Quote fields only when necessary
-            .setTrim(true)                // Trim leading/trailing whitespace from fields
-            .build();
+    private static final String CSV_HEADER = "employeeNumber,lastName,firstName,birthday,address,phoneNumber,sssNumber,philhealthNumber,tinNumber,pagibigNumber,status,position,immediateSupervisor,basicSalary,riceSubsidy,phoneAllowance,clothingAllowance,grossSemiMonthlyRate,hourlyRate";
+    // Delimiter for CSV file
+    private static final String CSV_DELIMITER = ",";
 
-
-    public EmployeeDao(String filePath) throws IOException {
+    public EmployeeDao(String filePath) {
         this.filePath = filePath;
-        // Ensure the CSV file exists with its header when the DAO is initialized
-        initializeCsvFile();
         // Load existing employees from CSV on initialization
         this.employees = loadEmployeesFromCsv();
         System.out.println("EmployeeDao: Initialized with " + employees.size() + " employees loaded from " + filePath);
     }
 
     /**
-     * Checks if the CSV file exists. If not, it creates the file with its header.
-     */
-    private void initializeCsvFile() {
-        Path path = Paths.get(filePath);
-        if (!Files.exists(path)) {
-            try {
-                // Ensure parent directory exists before creating the file
-                Path parentDir = path.getParent();
-                if (parentDir != null && !Files.exists(parentDir)) {
-                    Files.createDirectories(parentDir);
-                    System.out.println("EmployeeDao: Created parent directory for employees CSV: " + parentDir.toAbsolutePath());
-                }
-
-                // Write only the header using CSVPrinter, then close
-                try (FileWriter fileWriter = new FileWriter(path.toFile());
-                     CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS_ARRAY).build())) {
-                    System.out.println("EmployeeDao: Created new users CSV file with header: " + path.toAbsolutePath());
-                }
-            } catch (IOException e) {
-                System.err.println("EmployeeDao: Error creating users CSV file '" + filePath + "': " + e.getMessage());
-                throw new RuntimeException("Failed to initialize users CSV file.", e);
-            }
-        }
-    }
-
-    /**
-     * Loads employees from the CSV file using Apache Commons CSV.
+     * Loads employees from the CSV file.
      *
      * @return A list of Employee objects.
-     * @throws IOException 
      */
-    private List<Employee> loadEmployeesFromCsv() throws IOException {
-        List<Employee> data = new ArrayList<>();
-        Path path = Paths.get(filePath);
-        System.out.println("EmployeeDao: Attempting to load from CSV: " + path.toAbsolutePath());
-
-        if (!Files.exists(path) || !Files.isReadable(path) || Files.size(path) == 0) {
-            System.out.println("EmployeeDao: CSV file not found, not readable, or empty: " + path.toAbsolutePath() + ". Returning empty list.");
-            return data;
-        }
-
-        try (FileReader fileReader = new FileReader(path.toFile());
-             CSVParser csvParser = new CSVParser(fileReader, CSV_FORMAT)) {
-
-            for (CSVRecord csvRecord : csvParser) {
-                try {
-                    data.add(mapCsvRecordToEmployee(csvRecord));
-                } catch (Exception e) {
-                    System.err.println("EmployeeDao: Error mapping CSV record: '" + csvRecord.toMap() + "'. Skipping record. Error: " + e.getMessage());
-                }
-            }
-            System.out.println("EmployeeDao: Loaded " + data.size() + " records from " + filePath);
-        } catch (IOException e) {
-            System.err.println("EmployeeDao: Error reading CSV file '" + filePath + "': " + e.getMessage());
-            e.printStackTrace();
-        }
-        return data;
+    private List<Employee> loadEmployeesFromCsv() {
+        // Use CSVUtils to read lines and map them to Employee objects
+        return CSVUtils.loadFromCsv(filePath, this::mapCsvLineToEmployee, true); // true to skip header
     }
 
     /**
-     * Maps a single CSVRecord to an Employee object.
+     * Maps a single CSV line string to an Employee object.
+     * Handles potential parsing errors, especially for BigDecimal fields.
      *
-     * @param record The CSVRecord.
-     * @return An Employee object.
-     * @throws IllegalArgumentException if required fields are missing or parsing errors occur.
+     * @param line The CSV line string.
+     * @return An Employee object, or null if parsing fails.
      */
-    private Employee mapCsvRecordToEmployee(CSVRecord record) {
-        // Access fields by header name for robustness (less error-prone than by index)
-        String employeeNumber = record.get("employeeNumber");
-        String lastName = record.get("lastName");
-        String firstName = record.get("firstName");
-        String birthday = record.get("birthday");
-        String address = record.get("address");
-        String phoneNumber = record.get("phoneNumber");
-        String sssNumber = record.get("sssNumber");
-        String philhealthNumber = record.get("philhealthNumber");
-        String tinNumber = record.get("tinNumber");
-        String pagibigNumber = record.get("pagibigNumber");
-        String status = record.get("status");
-        String position = record.get("position");
-        String immediateSupervisor = record.get("immediateSupervisor");
+    private Employee mapCsvLineToEmployee(String line) {
+        try {
+            String[] parts = line.split(Pattern.quote(CSV_DELIMITER), -1); // -1 to keep trailing empty strings
+            // Ensure all expected parts are present (19 fields)
+            if (parts.length < 19) {
+                System.err.println("EmployeeDao: Skipping malformed CSV line (expected 19 parts, got " + parts.length + "): " + line);
+                return null;
+            }
 
-        // Parse BigDecimal values safely WITH DEBUG LOGGING
-        // This logging will show exactly what string value is being parsed
-        String basicSalaryStr = record.get("basicSalary");
-        System.out.println("DEBUG: Parsing basicSalary: '" + basicSalaryStr + "'");
-        BigDecimal basicSalary = parseBigDecimal(basicSalaryStr, "basicSalary");
+            // Parse BigDecimal values safely - FIX: Remove commas AND quotes
+            BigDecimal basicSalary = parseBigDecimal(parts[13], "basicSalary");
+            BigDecimal riceSubsidy = parseBigDecimal(parts[14], "riceSubsidy");
+            BigDecimal phoneAllowance = parseBigDecimal(parts[15], "phoneAllowance");
+            BigDecimal clothingAllowance = parseBigDecimal(parts[16], "clothingAllowance");
+            BigDecimal grossSemiMonthlyRate = parseBigDecimal(parts[17], "grossSemiMonthlyRate");
+            BigDecimal hourlyRate = parseBigDecimal(parts[18], "hourlyRate");
 
-        String riceSubsidyStr = record.get("riceSubsidy");
-        System.out.println("DEBUG: Parsing riceSubsidy: '" + riceSubsidyStr + "'");
-        BigDecimal riceSubsidy = parseBigDecimal(riceSubsidyStr, "riceSubsidy");
-
-        String phoneAllowanceStr = record.get("phoneAllowance");
-        System.out.println("DEBUG: Parsing phoneAllowance: '" + phoneAllowanceStr + "'");
-        BigDecimal phoneAllowance = parseBigDecimal(phoneAllowanceStr, "phoneAllowance");
-
-        String clothingAllowanceStr = record.get("clothingAllowance");
-        System.out.println("DEBUG: Parsing clothingAllowance: '" + clothingAllowanceStr + "'");
-        BigDecimal clothingAllowance = parseBigDecimal(clothingAllowanceStr, "clothingAllowance");
-
-        String grossSemiMonthlyRateStr = record.get("grossSemiMonthlyRate");
-        System.out.println("DEBUG: Parsing grossSemiMonthlyRate: '" + grossSemiMonthlyRateStr + "'");
-        BigDecimal grossSemiMonthlyRate = parseBigDecimal(grossSemiMonthlyRateStr, "grossSemiMonthlyRate");
-
-        String hourlyRateStr = record.get("hourlyRate");
-        System.out.println("DEBUG: Parsing hourlyRate: '" + hourlyRateStr + "'");
-        BigDecimal hourlyRate = parseBigDecimal(hourlyRateStr, "hourlyRate");
-
-        return new Employee(
-                employeeNumber, lastName, firstName, birthday, address,
-                phoneNumber, sssNumber, philhealthNumber, tinNumber, pagibigNumber,
-                status, position, immediateSupervisor, basicSalary, riceSubsidy,
-                phoneAllowance, clothingAllowance, grossSemiMonthlyRate, hourlyRate
-        );
+            return new Employee(
+                    parts[0], // employeeNumber
+                    parts[1], // lastName
+                    parts[2], // firstName
+                    parts[3], // birthday
+                    parts[4], // address
+                    parts[5], // phoneNumber
+                    parts[6], // sssNumber
+                    parts[7], // philhealthNumber
+                    parts[8], // tinNumber
+                    parts[9], // pagibigNumber
+                    parts[10], // status
+                    parts[11], // position
+                    parts[12], // immediateSupervisor
+                    basicSalary,
+                    riceSubsidy,
+                    phoneAllowance,
+                    clothingAllowance,
+                    grossSemiMonthlyRate,
+                    hourlyRate
+            );
+        } catch (Exception e) {
+            System.err.println("EmployeeDao: Error parsing CSV line to Employee: '" + line + "'. Error: " + e.getMessage());
+            e.printStackTrace();
+            return null; // Return null for unparseable lines
+        }
     }
 
     /**
      * Helper method to safely parse BigDecimal values from string parts.
      * Returns BigDecimal.ZERO if the part is empty or cannot be parsed.
-     * Now handles commas in numeric strings by removing them.
+     * FIX: Added removal of commas and quotation marks.
      */
     private BigDecimal parseBigDecimal(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
-            System.out.println("EmployeeDao: Parsing " + fieldName + ": Value is null or empty after trim. Defaulting to BigDecimal.ZERO.");
+            // System.out.println("EmployeeDao: " + fieldName + " is empty or null, using BigDecimal.ZERO.");
             return BigDecimal.ZERO;
         }
-        // Remove commas before attempting to parse
-        String cleanedValue = value.trim().replace(",", "");
         try {
-            return new BigDecimal(cleanedValue);
+            // Remove commas and quotation marks before parsing
+            String cleanValue = value.trim().replace(",", "").replace("\"", "");
+            System.out.println("DEBUG: Parsing " + fieldName + ": '" + value + "' -> cleaned to '" + cleanValue + "'"); // Added debug
+            return new BigDecimal(cleanValue);
         } catch (NumberFormatException e) {
-            System.err.println("EmployeeDao: Warning: Could not parse " + fieldName + " value '" + value + "' (cleaned to '" + cleanedValue + "'). Using BigDecimal.ZERO. Error: " + e.getMessage());
+            System.err.println("EmployeeDao: Warning: Could not parse " + fieldName + " value '" + value + "'. Using BigDecimal.ZERO. Error: " + e.getMessage());
             return BigDecimal.ZERO;
         }
     }
 
     /**
-     * Saves the current list of employees to the CSV file using Apache Commons CSV.
+     * Saves the current list of employees to the CSV file.
      * This method is called after any modification (add, update, delete).
      */
     private void saveEmployeesToCsv() {
-        Path path = Paths.get(filePath);
-        System.out.println("EmployeeDao: Attempting to save " + employees.size() + " records to CSV: " + path.toAbsolutePath());
-
-        // Ensure the parent directory exists
-        Path parentDir = path.getParent();
-        if (parentDir != null && !Files.exists(parentDir)) {
-            try {
-                Files.createDirectories(parentDir);
-                System.out.println("EmployeeDao: Created parent directory for CSV: " + parentDir.toAbsolutePath());
-            } catch (IOException e) {
-                System.err.println("EmployeeDao: Error creating parent directory for CSV '" + filePath + "': " + e.getMessage());
-            }
-        }
-
-        try (FileWriter fileWriter = new FileWriter(path.toFile());
-             CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSV_FORMAT)) {
-
-            for (Employee employee : employees) {
-                csvPrinter.printRecord(
-                        employee.getEmployeeNumber(),
-                        employee.getLastName(),
-                        employee.getFirstName(),
-                        employee.getBirthday(),
-                        employee.getAddress(),
-                        employee.getPhoneNumber(),
-                        employee.getSssNumber(),
-                        employee.getPhilhealthNumber(),
-                        employee.getTinNumber(),
-                        employee.getPagibigNumber(),
-                        employee.getStatus(),
-                        employee.getPosition(),
-                        employee.getImmediateSupervisor(),
-                        Optional.ofNullable(employee.getBasicSalary()).orElse(BigDecimal.ZERO).toPlainString(),
-                        Optional.ofNullable(employee.getRiceSubsidy()).orElse(BigDecimal.ZERO).toPlainString(),
-                        Optional.ofNullable(employee.getPhoneAllowance()).orElse(BigDecimal.ZERO).toPlainString(),
-                        Optional.ofNullable(employee.getClothingAllowance()).orElse(BigDecimal.ZERO).toPlainString(),
-                        Optional.ofNullable(employee.getGrossSemiMonthlyRate()).orElse(BigDecimal.ZERO).toPlainString(),
-                        Optional.ofNullable(employee.getHourlyRate()).orElse(BigDecimal.ZERO).toPlainString()
-                );
-            }
-            csvPrinter.flush(); // Ensure all data is written to the file
-            System.out.println("EmployeeDao: Successfully saved " + employees.size() + " records to " + filePath);
-        } catch (IOException e) {
-            System.err.println("EmployeeDao: Error writing to CSV file '" + filePath + "': " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to save data to CSV file.", e);
-        }
+        // Use CSVUtils to write Employee objects to CSV
+        CSVUtils.saveToCsv(filePath, employees, this::mapEmployeeToCsvLine, CSV_HEADER);
     }
 
+    /**
+     * Maps an Employee object to a single CSV line string.
+     *
+     * @param employee The Employee object.
+     * @return A CSV formatted string.
+     */
+    private String mapEmployeeToCsvLine(Employee employee) {
+        // Use Optional.ofNullable to handle potential null BigDecimal values, converting them to "0" for CSV.
+        // It's also possible to convert null BigDecimals to empty strings for CSV, but "0" is often safer for numeric fields.
+        return String.join(CSV_DELIMITER,
+                employee.getEmployeeNumber(),
+                employee.getLastName(),
+                employee.getFirstName(),
+                employee.getBirthday(),
+                employee.getAddress(),
+                employee.getPhoneNumber(),
+                employee.getSssNumber(),
+                employee.getPhilhealthNumber(),
+                employee.getTinNumber(),
+                employee.getPagibigNumber(),
+                employee.getStatus(),
+                employee.getPosition(),
+                employee.getImmediateSupervisor(),
+                Optional.ofNullable(employee.getBasicSalary()).orElse(BigDecimal.ZERO).toPlainString(),
+                Optional.ofNullable(employee.getRiceSubsidy()).orElse(BigDecimal.ZERO).toPlainString(),
+                Optional.ofNullable(employee.getPhoneAllowance()).orElse(BigDecimal.ZERO).toPlainString(),
+                Optional.ofNullable(employee.getClothingAllowance()).orElse(BigDecimal.ZERO).toPlainString(),
+                Optional.ofNullable(employee.getGrossSemiMonthlyRate()).orElse(BigDecimal.ZERO).toPlainString(),
+                Optional.ofNullable(employee.getHourlyRate()).orElse(BigDecimal.ZERO).toPlainString()
+        );
+    }
 
     /**
      * Adds a new employee to the in-memory list and persists to CSV.

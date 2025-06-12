@@ -1,5 +1,5 @@
 #### VARIABLES
-@token=95ce924b-38f7-4047-8b88-09c784e12218
+@token=8f0cc153-0aa1-4f0a-9b04-224edf9dd25f
 @userId=3a7fec77-0795-4699-9495-cad7814217af
 ####################################
 
@@ -76,5 +76,15 @@ Authorization: Bearer {{token}}
 
 ### Delete employee by employee number
 DELETE http://localhost:4567/api/protected/employees/10002 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Fetch valid year-month based on the date records in attendance.csv
+GET http://localhost:4567/api/protected/monthly-cutoffs HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Calculate salary & deductions
+GET http://localhost:4567/api/protected/employees/10034/salary?yearMonth=2024-12 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{token}}

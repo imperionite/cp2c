@@ -100,7 +100,7 @@ public class CSVUtils {
             System.out.println("CSVUtils: Successfully saved " + data.size() + " records to " + filePath);
         } catch (IOException e) {
             System.err.println("CSVUtils: Error writing to CSV file '" + filePath + "': " + e.getMessage());
-            e.printStackTrace(); // Print stack trace for debugging
+            e.printStackTrace();
             throw new RuntimeException("Failed to save data to CSV file.", e);
         }
     }

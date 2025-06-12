@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.regex.Pattern; // Import for Pattern.quote
+import java.util.regex.Pattern;
 
 /**
  * Data Access Object for User entities, managing persistence to a CSV file.

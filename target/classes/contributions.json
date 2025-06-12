@@ -1,0 +1,262 @@
+{
+  "sss": [
+    {
+      "salaryCap": 3499.99,
+      "contribution": 157.50
+    },
+    {
+      "salaryCap": 3999.99,
+      "contribution": 180.00
+    },
+    {
+      "salaryCap": 4499.99,
+      "contribution": 202.50
+    },
+    {
+      "salaryCap": 4999.99,
+      "contribution": 225.00
+    },
+    {
+      "salaryCap": 5499.99,
+      "contribution": 247.50
+    },
+    {
+      "salaryCap": 5999.99,
+      "contribution": 270.00
+    },
+    {
+      "salaryCap": 6499.99,
+      "contribution": 292.50
+    },
+    {
+      "salaryCap": 6999.99,
+      "contribution": 315.00
+    },
+    {
+      "salaryCap": 7499.99,
+      "contribution": 337.50
+    },
+    {
+      "salaryCap": 7999.99,
+      "contribution": 360.00
+    },
+    {
+      "salaryCap": 8499.99,
+      "contribution": 382.50
+    },
+    {
+      "salaryCap": 8999.99,
+      "contribution": 405.00
+    },
+    {
+      "salaryCap": 9499.99,
+      "contribution": 427.50
+    },
+    {
+      "salaryCap": 9999.99,
+      "contribution": 450.00
+    },
+    {
+      "salaryCap": 10499.99,
+      "contribution": 472.50
+    },
+    {
+      "salaryCap": 10999.99,
+      "contribution": 495.00
+    },
+    {
+      "salaryCap": 11499.99,
+      "contribution": 517.50
+    },
+    {
+      "salaryCap": 11999.99,
+      "contribution": 540.00
+    },
+    {
+      "salaryCap": 12499.99,
+      "contribution": 562.50
+    },
+    {
+      "salaryCap": 12999.99,
+      "contribution": 585.00
+    },
+    {
+      "salaryCap": 13499.99,
+      "contribution": 607.50
+    },
+    {
+      "salaryCap": 13999.99,
+      "contribution": 630.00
+    },
+    {
+      "salaryCap": 14499.99,
+      "contribution": 652.50
+    },
+    {
+      "salaryCap": 14999.99,
+      "contribution": 675.00
+    },
+    {
+      "salaryCap": 15499.99,
+      "contribution": 697.50
+    },
+    {
+      "salaryCap": 15999.99,
+      "contribution": 720.00
+    },
+    {
+      "salaryCap": 16499.99,
+      "contribution": 742.50
+    },
+    {
+      "salaryCap": 16999.99,
+      "contribution": 765.00
+    },
+    {
+      "salaryCap": 17499.99,
+      "contribution": 787.50
+    },
+    {
+      "salaryCap": 17999.99,
+      "contribution": 810.00
+    },
+    {
+      "salaryCap": 18499.99,
+      "contribution": 832.50
+    },
+    {
+      "salaryCap": 18999.99,
+      "contribution": 855.00
+    },
+    {
+      "salaryCap": 19499.99,
+      "contribution": 877.50
+    },
+    {
+      "salaryCap": 19999.99,
+      "contribution": 900.00
+    },
+    {
+      "salaryCap": 20499.99,
+      "contribution": 922.50
+    },
+    {
+      "salaryCap": 20999.99,
+      "contribution": 945.00
+    },
+    {
+      "salaryCap": 21499.99,
+      "contribution": 967.50
+    },
+    {
+      "salaryCap": 21999.99,
+      "contribution": 990.00
+    },
+    {
+      "salaryCap": 22499.99,
+      "contribution": 1012.50
+    },
+    {
+      "salaryCap": 22999.99,
+      "contribution": 1035.00
+    },
+    {
+      "salaryCap": 23499.99,
+      "contribution": 1057.50
+    },
+    {
+      "salaryCap": 23999.99,
+      "contribution": 1080.00
+    },
+    {
+      "salaryCap": 24499.99,
+      "contribution": 1102.50
+    },
+    {
+      "salaryCap": 24999.99,
+      "contribution": 1125.00
+    },
+    {
+      "salaryCap": 29999.99,
+      "contribution": 1350.00
+    },
+    {
+      "salaryCap": 999999999.99,
+      "contribution": 1350.00
+    }
+  ],
+  "philhealth": [
+    {
+      "minSalary": 0.00,
+      "maxSalary": 9999.99,
+      "rate": 0.045,
+      "fixedEmployeeContribution": 225.00
+    },
+    {
+      "minSalary": 10000.00,
+      "maxSalary": 89999.99,
+      "rate": 0.045,
+      "fixedEmployeeContribution": null
+    },
+    {
+      "minSalary": 90000.00,
+      "maxSalary": 999999999.99,
+      "rate": 0.045,
+      "fixedEmployeeContribution": 2025.00
+    }
+  ],
+  "pagibig": [
+    {
+      "salaryCap": 1500.00,
+      "contributionRate": 0.01
+    },
+    {
+      "salaryCap": 999999999.99,
+      "contributionRate": 0.02
+    }
+  ],
+  "withholdingTax": [
+    {
+      "minTaxableIncome": 0.00,
+      "maxTaxableIncome": 20833.00,
+      "fixedTax": 0.00,
+      "percentageOver": 0.00,
+      "excessOver": 0.00
+    },
+    {
+      "minTaxableIncome": 20833.01,
+      "maxTaxableIncome": 33332.00,
+      "fixedTax": 0.00,
+      "percentageOver": 0.20,
+      "excessOver": 20833.00
+    },
+    {
+      "minTaxableIncome": 33332.01,
+      "maxTaxableIncome": 66666.00,
+      "fixedTax": 2500.00,
+      "percentageOver": 0.25,
+      "excessOver": 33333.00
+    },
+    {
+      "minTaxableIncome": 66666.01,
+      "maxTaxableIncome": 166666.00,
+      "fixedTax": 10833.33,
+      "percentageOver": 0.30,
+      "excessOver": 66667.00
+    },
+    {
+      "minTaxableIncome": 166666.01,
+      "maxTaxableIncome": 666666.00,
+      "fixedTax": 40833.33,
+      "percentageOver": 0.32,
+      "excessOver": 166667.00
+    },
+    {
+      "minTaxableIncome": 666666.01,
+      "maxTaxableIncome": 999999999.99,
+      "fixedTax": 200833.33,
+      "percentageOver": 0.35,
+      "excessOver": 666667.00
+    }
+  ]
+}

@@ -54,10 +54,10 @@ public class AuthController {
             AuthResponse authResponse = authService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
             if (authResponse.getToken() != null) {
-                ctx.status(200); // OK
+                ctx.status(200); 
                 System.out.println("AuthController: Login successful for user: " + loginRequest.getUsername());
             } else {
-                ctx.status(401); // Unauthorized
+                ctx.status(401); 
                 System.out.println("AuthController: Login failed for user: " + loginRequest.getUsername() + ". Reason: "
                         + authResponse.getMessage());
             }
@@ -77,7 +77,7 @@ public class AuthController {
 
             if (registerRequest == null || registerRequest.getUsername() == null
                     || registerRequest.getPassword() == null) {
-                ctx.status(400); // Bad Request
+                ctx.status(400);
                 System.out
                         .println("AuthController: Bad Request - Username and password are required for registration.");
                 ctx.json(new MessageResponse("Username and password are required for registration"));
@@ -92,16 +92,15 @@ public class AuthController {
                 System.out.println("AuthController: User registered successfully: " + registerRequest.getUsername());
             } else {
                 // AuthService will return an error message if username already exists or format
-                // is wrong
-                ctx.status(409); // Conflict (e.g., username already exists) or 400 Bad Request (e.g., invalid
-                                 // format)
+                // is wrong; Conflict (e.g., username already exists) or 400 Bad Request (e.g., invalid format)
+                ctx.status(409); 
                 System.out.println("AuthController: User registration failed for: " + registerRequest.getUsername()
                         + ". Reason: " + authResponse.getMessage());
             }
             ctx.json(authResponse);
         });
 
-        // Add a simple test endpoint to confirm filter functionality
+        // Simple test endpoint to confirm filter functionality
         app.get("/api/protected/test", ctx -> {
             User currentUser = ctx.attribute("currentUser"); // Retrieve authenticated user from context
             ctx.result("This is a PROTECTED endpoint. You are authenticated as: "
