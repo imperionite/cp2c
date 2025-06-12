@@ -49,9 +49,9 @@ In accordance with the course requirements and the mentor’s recommendation to 
 
 ![Employee Detail](https://drive.google.com/uc?id=1tMgunhip_L6iUns_3rFHmYQsdjbsZKTs)
 
-**Auth User Update Employee Information**
+**View Employee Salary & Deductions**
 
-![Update Employee Detail](https://drive.google.com/uc?id=1WzhEUseji0LDSiXhtczAMIBtmeLS6V6l)
+![Employee Salary & Deductions](https://drive.google.com/uc?id=1zovo2NDst4qfwbqOClFlbvuuIReDRXQp)
 
 **User Creation Success**
 
