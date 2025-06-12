@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { employeeKeys } from "./queryKeyFactory";
-import { getEmployeePartialDetails, getEmployeeByEmployeeNumber } from "./http";
+import { employeeKeys, salaryKeys } from "./queryKeyFactory";
+import { getEmployeePartialDetails, getEmployeeByEmployeeNumber, fetchEmployeeMonthlySalary, fetchMonthlyCutoffs } from "./http";
 
 export const useEmployeePartialDetails = (accessToken) => {
   return useQuery({
@@ -21,3 +21,28 @@ export const useFetchByEmployeeNumber = (accessToken, employeeNumber) => {
     enabled: !!accessToken && !!employeeNumber,
   });
 };
+
+export function useFetchMonthlyCutoffs(accessToken, enabled) {
+  return useQuery({
+    queryKey: salaryKeys.monthlyCutoffs(),
+    queryFn: fetchMonthlyCutoffs,
+    enabled: !!accessToken && enabled, // Only fetch if token is available and enabled
+    staleTime: Infinity, // Cutoffs are likely static or change infrequently
+    onError: (error) => {
+      console.error("Error fetching monthly cutoffs:", error);
+    },
+  });
+}
+
+
+export function useFetchEmployeeMonthlySalary(accessToken, employeeNumber, yearMonth, enabled) {
+  return useQuery({
+    queryKey: salaryKeys.employeeSalary(employeeNumber, yearMonth),
+    queryFn: () => fetchEmployeeMonthlySalary(employeeNumber, yearMonth),
+    enabled: !!accessToken && !!employeeNumber && !!yearMonth && enabled,
+    staleTime: 0, // Always refetch as salary calculation might depend on live attendance data
+    onError: (error) => {
+      console.error(`Error calculating salary for ${employeeNumber} - ${yearMonth}:`, error);
+    },
+  });
+}

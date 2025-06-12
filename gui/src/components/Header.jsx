@@ -49,7 +49,7 @@ function Header() {
   };
 
   const navItemsUnauth = ["Home", "About", "Services", "Contact", "Login"];
-  const navItemsAuth = ["Home", "Employees", "Services", "About", "Logout"];
+  const navItemsAuth = ["Home", "Employees", "Services", "Register", "Logout"];
 
   const navRoutes = {
     Home: "/home",
@@ -57,8 +57,8 @@ function Header() {
     Services: "/services",
     Contact: "/contact",
     Login: "/",
-    Employees: '/employees'
-    // Account: "/account",
+    Employees: '/employees',
+    Register: "/register",
   };
 
   const navItems = isAuthenticated ? navItemsAuth : navItemsUnauth;

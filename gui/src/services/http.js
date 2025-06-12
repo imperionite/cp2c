@@ -63,7 +63,7 @@ http.interceptors.response.use(
       localStorage.removeItem("authAtom");
       console.log("Session expired or unauthorized. Please log in again.");
       // Redirect to login page (optional)
-      window.location.href = "/login"; 
+      window.location.href = "/login";
       return Promise.reject(error);
     }
 
@@ -79,6 +79,26 @@ const login = async (data) => {
   } catch (error) {
     console.error("Login error", error);
     throw new Error("Failed to login!");
+  }
+};
+
+const register = async (data) => {
+  try {
+    const response = await http.post("/api/register", data);
+    return response.data;
+  } catch (error) {
+    console.error("Register error", error);
+    throw new Error("Failed to register!");
+  }
+};
+
+const createEmployee = async (data) => {
+  try {
+    const response = await http.post("/api/protected/employees", data);
+    return response.data;
+  } catch (error) {
+    console.error("Create new employee error", error);
+    throw new Error("Failed to create new employee!");
   }
 };
 
@@ -106,17 +126,25 @@ const getEmployeeByEmployeeNumber = async (employeeNumber) => {
 
 const updateEmployee = async (employeeNumber, data) => {
   try {
-    const response = await http.patch(`/api/protected/employees/${employeeNumber}`, data);
+    const response = await http.patch(
+      `/api/protected/employees/${employeeNumber}`,
+      data
+    );
     return response.data;
   } catch (error) {
     console.error(`Error updating employee ${employeeNumber}:`, error);
-    throw new Error(error.response?.data?.message || `Failed to update employee ${employeeNumber}!`);
+    throw new Error(
+      error.response?.data?.message ||
+        `Failed to update employee ${employeeNumber}!`
+    );
   }
 };
 
 const deleteEmployee = async (employeeNumber) => {
   try {
-    const response = await http.delete(`/api/protected/employees/${employeeNumber}`);
+    const response = await http.delete(
+      `/api/protected/employees/${employeeNumber}`
+    );
     // For 204 No Content, response.data might be empty or undefined.
     // Return a success message or simply check response.status
     if (response.status === 204) {
@@ -125,17 +153,43 @@ const deleteEmployee = async (employeeNumber) => {
     return response.data; // For other successful statuses that might return data
   } catch (error) {
     console.error(`Error deleting employee ${employeeNumber}:`, error);
-    throw new Error(error.response?.data?.message || `Failed to delete employee ${employeeNumber}!`);
+    throw new Error(
+      error.response?.data?.message ||
+        `Failed to delete employee ${employeeNumber}!`
+    );
+  }
+};
+
+const fetchMonthlyCutoffs = async () => {
+  try {
+    const response = await http.get("/api/protected/monthly-cutoffs");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching monthly cut-off periods:", error);
+    throw new Error("Failed to fetch monthly cut-offs");
+  }
+};
+const fetchEmployeeMonthlySalary = async (employeeNumber, yearMonth) => {
+  try {
+    const response = await http.get(
+      `api/protected/employees/${employeeNumber}/salary?yearMonth=${yearMonth}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching employee monthly salary:", error);
+    throw new Error("Failed to fetch employee monthly salary");
   }
 };
 
 export {
   login,
-  // signup,
+  register,
   getAccessToken,
   getEmployeePartialDetails,
   getEmployeeByEmployeeNumber,
   updateEmployee,
-  deleteEmployee
-
+  deleteEmployee,
+  fetchEmployeeMonthlySalary,
+  fetchMonthlyCutoffs,
+  createEmployee
 };

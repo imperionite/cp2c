@@ -17,7 +17,7 @@ import { sanitize } from "isomorphic-dompurify";
 import * as yup from "yup";
 
 import { login } from "../services/http";
-import { userKeys } from "../services/queryKeyFactory";
+import { userKeys, employeeKeys } from "../services/queryKeyFactory";
 import { authAtom } from "../services/atoms";
 const Loader = lazy(() => import("./Loader"));
 
@@ -39,20 +39,21 @@ const Login = () => {
     mutationFn: login,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all });
 
       setAuth({
         userId: data?.userId,
         username: data?.username,
         token: data?.token,
       });
-      //const decoded = jwtDecode(data.acess)
+
       toast.success(data?.message);
       reset();
       navigate("/employees");
     },
     onError: (error) => {
       toast.error(error);
-      
+
       navigate("/");
     },
   });

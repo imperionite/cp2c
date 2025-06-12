@@ -334,6 +334,6 @@ To prevent inaccurate salary calculations for months with no attendance records,
 
 To assist front-end applications and users in querying valid periods, the API provides the following endpoint:
 
-#### `GET /api/protected/monthly-cutoffs`
+**`GET /api/protected/monthly-cutoffs`**
 
 This endpoint returns a list of `MonthlyCutoff` objects, each representing a unique year-month that has at least one attendance record in `attendance.csv`. This ensures that only periods with existing attendance data can be queried for salary calculations, improving data integrity and user experience.

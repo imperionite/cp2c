@@ -1,5 +1,5 @@
 #### VARIABLES
-@token=8f0cc153-0aa1-4f0a-9b04-224edf9dd25f
+@token=1c83d970-1ff7-452c-a7d9-bc537668a206
 @userId=3a7fec77-0795-4699-9495-cad7814217af
 ####################################
 
@@ -33,7 +33,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "username": "user-10035",
+    "username": "10035",
     "password": "userPassword#"
 }
 

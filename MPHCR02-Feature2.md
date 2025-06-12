@@ -53,12 +53,22 @@ In accordance with the course requirements and the mentor’s recommendation to 
 
 ![Update Employee Detail](https://drive.google.com/uc?id=1WzhEUseji0LDSiXhtczAMIBtmeLS6V6l)
 
-**Update Employee Information Success**
+**User Creation Success**
 
-![Update Employee Success](https://drive.google.com/uc?id=1pC48Uct5FTiJmdDhqLE1OFuDBV3HXcIY)
+![User Creation Success](https://drive.google.com/uc?id=1yGPfyXT2LDzfZVWKJYWmH2mBn568mcnJ)
 
-**Deleting Employee/User**
+**User Creation Failed**
 
-![Delete Employee/User](https://drive.google.com/uc?id=11WcbNWP3aG6UB_bXL6cAdBpSrGUFVSDD)
+![User Creation Failed](https://drive.google.com/uc?id=1z0R5fujrD61bmL2htYC76u4RjXPtT75w)
 
+**Employee Creation**
 
+![Employee Creation](https://drive.google.com/uc?id=1su2q8-ROciQnPbV1rzIC7_prpbieL9Qr)
+
+**Employee Creation Success**
+
+![Employee Creation Success](https://drive.google.com/uc?id=1yuXJeG82-72IWQ30mR9FC3dfAnhonvI3)
+
+**New Employee Created**
+
+![New Employee Created](https://drive.google.com/uc?id=12nX5V16-gpN0n7c10pMO_xah6TM2Lo5k)

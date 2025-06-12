@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai"; // Essential for your Jotai atoms
 import { Box, CircularProgress, Typography } from "@mui/material"; // Material UI components
 
 // Your application's authentication atom (ensure this path is correct)
-import { authAtom } from "../services/atoms"; 
+import { authAtom } from "../services/atoms";
 
 const Login = lazy(() => import("./Login"));
 const Employees = lazy(() => import("./Employees"));
@@ -12,12 +12,12 @@ const EmployeeDetail = lazy(() => import("./EmployeeDetail")); // Single employe
 const Home = lazy(() => import("./Home"));
 const About = lazy(() => import("./About"));
 const Services = lazy(() => import("./Services"));
+const Register = lazy(() => import("./Register"));
 const Contact = lazy(() => import("./Contact"));
 const NotFound = lazy(() => import("./404"));
 
 // Your Loader component (ensure this path is correct)
-const Loader = lazy(() => import("./Loader")); 
-
+const Loader = lazy(() => import("./Loader"));
 
 // --- PrivateRoute Component (Adopted from your code) ---
 // This component protects routes, ensuring only authenticated users can access them.
@@ -108,8 +108,15 @@ const RouterList = () => {
         {/* Public routes */}
         {/* The root path '/' now uses GuestRoute. If authenticated, it redirects to /employees.
             Otherwise, it renders the Login component. */}
-        <Route path="/" element={<GuestRoute><Login /></GuestRoute>} />
-        
+        <Route
+          path="/"
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
+        />
+
         {/* Other public pages */}
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -143,6 +150,15 @@ const RouterList = () => {
           element={
             <PrivateRoute>
               <EmployeeDetail />
+            </PrivateRoute>
+          }
+        />
+        {/* Registering new user is a protected route */}
+        <Route
+          path="/register"
+          element={
+            <PrivateRoute>
+              <Register />
             </PrivateRoute>
           }
         />

@@ -1,12 +1,15 @@
 package com.imperionite.cp2c.dao;
 
 import com.imperionite.cp2c.model.Employee;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -22,14 +25,41 @@ public class EmployeeDao {
 
     // CSV header for the employees file
     private static final String CSV_HEADER = "employeeNumber,lastName,firstName,birthday,address,phoneNumber,sssNumber,philhealthNumber,tinNumber,pagibigNumber,status,position,immediateSupervisor,basicSalary,riceSubsidy,phoneAllowance,clothingAllowance,grossSemiMonthlyRate,hourlyRate";
-    // Delimiter for CSV file
-    private static final String CSV_DELIMITER = ",";
+    // Regex for splitting CSV lines, handling commas within double quotes.
+    // This regex splits on a comma that is NOT followed by an even number of quotation marks until the end of the line.
+    private static final String CSV_SPLIT_REGEX = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
+
 
     public EmployeeDao(String filePath) {
         this.filePath = filePath;
+        // Ensure the CSV file exists with its header when the DAO is initialized
+        initializeCsvFile();
         // Load existing employees from CSV on initialization
         this.employees = loadEmployeesFromCsv();
         System.out.println("EmployeeDao: Initialized with " + employees.size() + " employees loaded from " + filePath);
+    }
+
+    /**
+     * Checks if the CSV file exists. If not, it creates the file with its header.
+     */
+    private void initializeCsvFile() {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            try {
+                // Ensure parent directory exists before creating the file
+                Path parentDir = path.getParent();
+                if (parentDir != null && !Files.exists(parentDir)) {
+                    Files.createDirectories(parentDir);
+                    System.out.println("EmployeeDao: Created parent directory for employees CSV: " + parentDir.toAbsolutePath());
+                }
+                Files.writeString(path, CSV_HEADER + System.lineSeparator());
+                System.out.println("EmployeeDao: Created new employees CSV file with header: " + path.toAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("EmployeeDao: Error creating employees CSV file '" + filePath + "': " + e.getMessage());
+                // Rethrow as runtime exception since persistence won't work without the file
+                throw new RuntimeException("Failed to initialize employees CSV file.", e);
+            }
+        }
     }
 
     /**
@@ -51,14 +81,30 @@ public class EmployeeDao {
      */
     private Employee mapCsvLineToEmployee(String line) {
         try {
-            String[] parts = line.split(Pattern.quote(CSV_DELIMITER), -1); // -1 to keep trailing empty strings
-            // Ensure all expected parts are present (19 fields)
+            // Use the more robust regex to split the line, handling commas within quotes
+            String[] parts = line.split(CSV_SPLIT_REGEX, -1);
+            // Ensure all expected parts are present (19 fields based on CSV_HEADER)
             if (parts.length < 19) {
                 System.err.println("EmployeeDao: Skipping malformed CSV line (expected 19 parts, got " + parts.length + "): " + line);
                 return null;
             }
 
-            // Parse BigDecimal values safely - FIX: Remove commas AND quotes
+            // Trim parts and remove surrounding quotes for string fields that might have them
+            String employeeNumber = parts[0].trim();
+            String lastName = parts[1].trim();
+            String firstName = parts[2].trim();
+            String birthday = parts[3].trim();
+            String address = parts[4].trim().replace("\"", ""); // Remove outer quotes for address
+            String phoneNumber = parts[5].trim();
+            String sssNumber = parts[6].trim();
+            String philhealthNumber = parts[7].trim();
+            String tinNumber = parts[8].trim();
+            String pagibigNumber = parts[9].trim();
+            String status = parts[10].trim();
+            String position = parts[11].trim();
+            String immediateSupervisor = parts[12].trim().replace("\"", ""); // Immediate supervisor might also be quoted
+
+            // Parse BigDecimal values safely - ENSURE COMMAS AND QUOTES ARE REMOVED
             BigDecimal basicSalary = parseBigDecimal(parts[13], "basicSalary");
             BigDecimal riceSubsidy = parseBigDecimal(parts[14], "riceSubsidy");
             BigDecimal phoneAllowance = parseBigDecimal(parts[15], "phoneAllowance");
@@ -67,19 +113,19 @@ public class EmployeeDao {
             BigDecimal hourlyRate = parseBigDecimal(parts[18], "hourlyRate");
 
             return new Employee(
-                    parts[0], // employeeNumber
-                    parts[1], // lastName
-                    parts[2], // firstName
-                    parts[3], // birthday
-                    parts[4], // address
-                    parts[5], // phoneNumber
-                    parts[6], // sssNumber
-                    parts[7], // philhealthNumber
-                    parts[8], // tinNumber
-                    parts[9], // pagibigNumber
-                    parts[10], // status
-                    parts[11], // position
-                    parts[12], // immediateSupervisor
+                    employeeNumber,
+                    lastName,
+                    firstName,
+                    birthday,
+                    address,
+                    phoneNumber,
+                    sssNumber,
+                    philhealthNumber,
+                    tinNumber,
+                    pagibigNumber,
+                    status,
+                    position,
+                    immediateSupervisor,
                     basicSalary,
                     riceSubsidy,
                     phoneAllowance,
@@ -97,17 +143,15 @@ public class EmployeeDao {
     /**
      * Helper method to safely parse BigDecimal values from string parts.
      * Returns BigDecimal.ZERO if the part is empty or cannot be parsed.
-     * FIX: Added removal of commas and quotation marks.
+     * IMPORTANT: This must remove commas and quotation marks before parsing.
      */
     private BigDecimal parseBigDecimal(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
-            // System.out.println("EmployeeDao: " + fieldName + " is empty or null, using BigDecimal.ZERO.");
             return BigDecimal.ZERO;
         }
         try {
             // Remove commas and quotation marks before parsing
             String cleanValue = value.trim().replace(",", "").replace("\"", "");
-            System.out.println("DEBUG: Parsing " + fieldName + ": '" + value + "' -> cleaned to '" + cleanValue + "'"); // Added debug
             return new BigDecimal(cleanValue);
         } catch (NumberFormatException e) {
             System.err.println("EmployeeDao: Warning: Could not parse " + fieldName + " value '" + value + "'. Using BigDecimal.ZERO. Error: " + e.getMessage());
@@ -131,22 +175,22 @@ public class EmployeeDao {
      * @return A CSV formatted string.
      */
     private String mapEmployeeToCsvLine(Employee employee) {
-        // Use Optional.ofNullable to handle potential null BigDecimal values, converting them to "0" for CSV.
-        // It's also possible to convert null BigDecimals to empty strings for CSV, but "0" is often safer for numeric fields.
-        return String.join(CSV_DELIMITER,
-                employee.getEmployeeNumber(),
-                employee.getLastName(),
-                employee.getFirstName(),
-                employee.getBirthday(),
-                employee.getAddress(),
-                employee.getPhoneNumber(),
-                employee.getSssNumber(),
-                employee.getPhilhealthNumber(),
-                employee.getTinNumber(),
-                employee.getPagibigNumber(),
-                employee.getStatus(),
-                employee.getPosition(),
-                employee.getImmediateSupervisor(),
+        // The Optional.ofNullable to handle potential null BigDecimal values, converting them to "0" for CSV was used.
+        // Also ensure that string fields that might contain commas are quoted before writing to CSV.
+        return String.join(",",
+                quoteCsvField(employee.getEmployeeNumber()),
+                quoteCsvField(employee.getLastName()),
+                quoteCsvField(employee.getFirstName()),
+                quoteCsvField(employee.getBirthday()),
+                quoteCsvField(employee.getAddress()),
+                quoteCsvField(employee.getPhoneNumber()),
+                quoteCsvField(employee.getSssNumber()),
+                quoteCsvField(employee.getPhilhealthNumber()),
+                quoteCsvField(employee.getTinNumber()),
+                quoteCsvField(employee.getPagibigNumber()),
+                quoteCsvField(employee.getStatus()),
+                quoteCsvField(employee.getPosition()),
+                quoteCsvField(employee.getImmediateSupervisor()),
                 Optional.ofNullable(employee.getBasicSalary()).orElse(BigDecimal.ZERO).toPlainString(),
                 Optional.ofNullable(employee.getRiceSubsidy()).orElse(BigDecimal.ZERO).toPlainString(),
                 Optional.ofNullable(employee.getPhoneAllowance()).orElse(BigDecimal.ZERO).toPlainString(),
@@ -155,6 +199,23 @@ public class EmployeeDao {
                 Optional.ofNullable(employee.getHourlyRate()).orElse(BigDecimal.ZERO).toPlainString()
         );
     }
+
+    /**
+     * Helper to quote a CSV field if it contains commas or double quotes.
+     * Double quotes within the field are escaped by doubling them.
+     */
+    private String quoteCsvField(String field) {
+        if (field == null) {
+            return "";
+        }
+        // Check if field contains comma, double quote, or newline
+        if (field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r")) {
+            // Escape double quotes by doubling them, then enclose in double quotes
+            return "\"" + field.replace("\"", "\"\"") + "\"";
+        }
+        return field;
+    }
+
 
     /**
      * Adds a new employee to the in-memory list and persists to CSV.
