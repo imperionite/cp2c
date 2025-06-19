@@ -32,6 +32,8 @@ This milestone 2 project is designed to fulfill the requirements outlined in [Mo
 **Note**:
 In accordance with the course requirements and the mentor’s recommendation to use CSV files for data management, I have created a new project repository as a continuation of the [CP2A](https://github.com/imperionite/cp2a) project (Milestone 1), named **CP2C**. This new project differs in the technologies employed: it uses [Javalin](https://javalin.io), a Java-based microframework; CSV files instead of a database; and basic token authentication rather than `JWT`. The goal is to complete the project using these technologies through to the terminal assessment, prioritizing less framework's abstraction compared to the enterprise grade overhead of the previous poject done in MS 1, simplicity and modularity.
 
+For the general documentation of this project, please check the [README](https://github.com/imperionite/cp2c/blob/main/README.md). 
+
 ## API Documentation
 
 All API endpoints in this project are protected routes except for the login endpoint. Role-based access control (RBAC) has not been applied, so both users and employees can perform actions as long as they are authenticated.
