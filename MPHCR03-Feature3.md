@@ -9,9 +9,7 @@ In accordance with the course requirements and the mentor’s recommendation to 
 
 ---
 
-## Manual API Tests: View, Create, Update, Delete Records
-
-- [Video Demo Link](https://drive.google.com/file/d/1XRpQnfmdIi2cGKM86hdhWbnOZowG5QN0/view?usp=sharing)
+## API Documentation: View, Update, Delete Records
 
 | **Action**                    | **HTTP Method** | **Endpoint**                                | **Auth Required**  | **Request Body Example / Notes**                                                                                     |
 | ----------------------------- | --------------- | ------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------- |
@@ -31,11 +29,7 @@ In accordance with the course requirements and the mentor’s recommendation to 
   - Admin: username `admin`, password `adminPassword`
   - User: username `user-{employeeNumber}`, password `userPassword`
 
-## GUI: View, Update, Delete Records
-
-- [Video Demo Link](https://drive.google.com/file/d/1OP4RsoPZEO3RLHX1VDMBomlUhFdAqS64/view?usp=sharing)
-
-## Screenshots
+## Client-Side GUI Screenshots
 
 **Login**
 

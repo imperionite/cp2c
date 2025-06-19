@@ -43,10 +43,7 @@ All essential background, rationale, and initial API endpoint documentation are 
   ```sh
   mvn clean package
   ```
-- **Clean, compile, and execute one-liner command (deletes `data` directory on every code change):**
-  ```sh
-  rm -rf data && mvn clean compile exec:java
-  ```
+  
 - **Run the jar file after deleting the `data` directory: The app run at port `4567`**
   ```sh
   rm -rf data && mvn clean package && java -jar target/cp2c-1.0-SNAPSHOT.jar

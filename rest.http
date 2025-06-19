@@ -1,5 +1,5 @@
 #### VARIABLES
-@token=1c83d970-1ff7-452c-a7d9-bc537668a206
+@token=45d7df7a-ab61-4f5e-b2a5-02cc07d92f40
 @userId=3a7fec77-0795-4699-9495-cad7814217af
 ####################################
 
@@ -12,7 +12,7 @@ POST http://localhost:4567/api/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "user-10034",
+    "username": "user-10028",
     "password": "userPassword"
 }
 
