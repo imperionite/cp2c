@@ -24,7 +24,7 @@
 
 ## Project Overview
 
-This milestone 2 project is a full-stack application with `Java/Javalin` & `CSV files` in the server-side and `React` for the client. The project is developed to fulfill the requirements outlined in [MotorPH's Change Requests Form](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?usp=sharing), specifically:
+This Milestone 2 project is a full-stack application that uses `Java` with the `Javalin` framework and `CSV files` for the server-side, and `React` for the client-side. It follows a loosely coupled and modular architecture to ensure clear separation of concerns between the two systems. The project was developed to fulfill the requirements outlined in [MotorPH's Change Requests Form](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?usp=sharing), specifically:
 
 - [MPHCR02-Feature 2](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=1902740868#gid=1902740868)
 - [MPHCR03-Feature 3](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?gid=28244578#gid=28244578)
