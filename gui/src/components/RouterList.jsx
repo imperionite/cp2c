@@ -1,14 +1,13 @@
 import { lazy, useState, useEffect, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAtomValue } from "jotai"; // Essential for your Jotai atoms
-import { Box, CircularProgress, Typography } from "@mui/material"; // Material UI components
+import { useAtomValue } from "jotai";
+import { Box, CircularProgress, Typography } from "@mui/material"; 
 
-// Your application's authentication atom (ensure this path is correct)
 import { authAtom } from "../services/atoms";
 
 const Login = lazy(() => import("./Login"));
 const Employees = lazy(() => import("./Employees"));
-const EmployeeDetail = lazy(() => import("./EmployeeDetail")); // Single employee view
+const EmployeeDetail = lazy(() => import("./EmployeeDetail"));
 const Home = lazy(() => import("./Home"));
 const About = lazy(() => import("./About"));
 const Services = lazy(() => import("./Services"));
@@ -16,10 +15,8 @@ const Register = lazy(() => import("./Register"));
 const Contact = lazy(() => import("./Contact"));
 const NotFound = lazy(() => import("./404"));
 
-// Your Loader component (ensure this path is correct)
 const Loader = lazy(() => import("./Loader"));
 
-// --- PrivateRoute Component (Adopted from your code) ---
 // This component protects routes, ensuring only authenticated users can access them.
 const PrivateRoute = ({ children }) => {
   const auth = useAtomValue(authAtom); // Get JWT token from Jotai atom
@@ -27,27 +24,25 @@ const PrivateRoute = ({ children }) => {
 
   useEffect(() => {
     // This effect runs once on mount to handle Jotai's state rehydration from localStorage.
-    // jwt !== undefined: Indicates Jotai has read its initial value (even if it's null).
-    // localStorage.getItem('jwtAtom'): Fallback check if Jotai's atom hasn't fully updated yet,
-    // but we know data exists in storage (useful for initial load edge cases).
+    // auth token !== undefined: Indicates Jotai has read its initial value (even if it's null).
+    // localStorage.getItem('authAtom'): Fallback check if Jotai's atom hasn't fully updated yet,
     const storedAuth = localStorage.getItem("authAtom");
 
     if (auth !== undefined || storedAuth) {
-      // If Jotai has initialized (jwt is not undefined) or there's a token in localStorage,
-      // we've attempted rehydration.
+      // If Jotai has initialized (auth is not undefined) or there's a token in localStorage,
+      // attempted rehydration.
       setIsAttemptingRehydration(false);
     } else {
       // As a safeguard for very quick loads where the atom's state
-      // might not immediately transition from `undefined`, give it a small timeout.
+      // might not immediately transition from `undefined`
       const timer = setTimeout(() => {
         setIsAttemptingRehydration(false);
       }, 300); // Give Jotai 300ms to rehydrate
       return () => clearTimeout(timer); // Cleanup the timer
     }
-  }, [auth]); // Dependency on jwt ensures this effect reacts when jwt changes
+  }, [auth]); 
 
   if (isAttemptingRehydration) {
-    // Show your Loader component while authentication state is being determined
     return <Loader />;
   }
 
@@ -60,7 +55,7 @@ const PrivateRoute = ({ children }) => {
 // --- GuestRoute Component (Adopted from your code) ---
 // This component prevents authenticated users from accessing "guest-only" routes (like login).
 const GuestRoute = ({ children }) => {
-  const auth = useAtomValue(authAtom); // Get JWT token from Jotai atom
+  const auth = useAtomValue(authAtom); 
   const [isAttemptingRehydration, setIsAttemptingRehydration] = useState(true);
 
   useEffect(() => {
@@ -77,7 +72,6 @@ const GuestRoute = ({ children }) => {
   }, [auth]);
 
   if (isAttemptingRehydration) {
-    // Show a loading indicator while authenticating/rehydrating
     return (
       <Box
         sx={{
