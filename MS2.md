@@ -22,7 +22,7 @@
 5. [Client-Side GUI Screenshots](#client-side-gui-screenshots)
 6. [Sample API Calls](#sample-api-calls)
 
-## Poroject Overview
+## Project Overview
 
 This milestone 2 project is designed to fulfill the requirements outlined in [MotorPH's Change Requests Form](https://docs.google.com/spreadsheets/d/1AHv2ht0gqcOINH_yn08s8NBn5DFM-7RIhZlnDWJyEpU/edit?usp=sharing), specifically:
 
