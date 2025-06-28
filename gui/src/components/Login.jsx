@@ -52,9 +52,11 @@ const Login = () => {
       navigate("/employees");
     },
     onError: (error) => {
-      toast.error(error);
-
-      navigate("/");
+      const errorMessage =
+        error.response?.data?.detail ||
+        error.message ||
+        "Login failed. Please try again.";
+      toast.error(errorMessage);
     },
   });
 

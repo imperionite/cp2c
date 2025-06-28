@@ -14,9 +14,9 @@ const Home = () => {
           <p>
             This is a proof-of-concept webpage design to augment and test the
             MotorPH backend REST API project for employee management system at{" "}
-            <a href="https://github.com/imperionite/cp2a">
+            <a href="https://github.com/imperionite/cp2c">
               {" "}
-              https://github.com/imperionite/cp2a
+              https://github.com/imperionite/cp2c
             </a>
             .
           </p>

@@ -57,16 +57,15 @@ http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      // Session expired or unauthorized. Log out the user.
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/api/login")
+    ) {
       localStorage.removeItem("authAtom");
-      console.log("Session expired or unauthorized. Please log in again.");
-      // Redirect to login page (optional)
       window.location.href = "/login";
       return Promise.reject(error);
     }
-
     return Promise.reject(error);
   }
 );
@@ -78,7 +77,7 @@ const login = async (data) => {
     return response.data;
   } catch (error) {
     console.error("Login error", error);
-    throw new Error("Failed to login!");
+    throw error
   }
 };
 
